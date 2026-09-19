@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { loadConfig } from './config.js';
 
@@ -27,6 +28,7 @@ export function compileSlides(projectDir, options = {}) {
   const preset = config._preset;
   const args = [
     '--allow-local-files',
+    '--no-stdin',
     inputFile,
     '-o', outputFile
   ];
@@ -40,7 +42,16 @@ export function compileSlides(projectDir, options = {}) {
   if (preset.marp && preset.marp.theme) {
     const themePath = path.resolve(preset._baseDir, preset.marp.theme);
     if (fs.existsSync(themePath)) {
-      args.push('--theme-set', themePath);
+      const cssRaw = fs.readFileSync(themePath, 'utf8');
+      const themeDir = path.dirname(themePath);
+      // Replace relative asset urls with absolute file:/// urls so Marp always finds them
+      const resolvedCss = cssRaw.replace(/url\((['"]?)(assets\/[^'"\)]+)\1\)/g, (m, quote, relPath) => {
+        const absPath = path.resolve(themeDir, relPath).replace(/\\/g, '/');
+        return `url("file:///${absPath}")`;
+      });
+      const tmpCss = path.join(os.tmpdir(), `m-docflow-theme-${preset.id}.css`);
+      fs.writeFileSync(tmpCss, resolvedCss, 'utf8');
+      args.push('--theme-set', tmpCss);
     }
   }
 
