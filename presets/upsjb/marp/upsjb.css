@@ -1,0 +1,294 @@
+/* @theme upsjb */
+@import 'default';
+
+:root {
+  --upsjb-crimson: #9C0028;
+  --upsjb-bright-red: #D30040;
+  --upsjb-dark: #1A1A1A;
+  --upsjb-muted: #555555;
+  --upsjb-bg-light: #F8F9FA;
+}
+
+/* =========================================================================
+   DIAPOSITIVA GENERAL / INTERIOR (Fondo oficial con logo SJB y cintillo)
+   ========================================================================= */
+section {
+  font-family: 'Arial', 'Segoe UI', Helvetica, sans-serif;
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--upsjb-dark);
+  padding: 45px 65px 55px 65px;
+  background-image: url('assets/bg_interior.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  letter-spacing: -0.01em;
+}
+
+/* Títulos de láminas interiores */
+section h1, section h2 {
+  font-family: 'Arial', sans-serif;
+  color: var(--upsjb-crimson);
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-bottom: 3px solid var(--upsjb-bright-red);
+  padding-bottom: 6px;
+  max-width: 78%; /* Evita colisión con el logo superior derecho */
+  text-transform: uppercase;
+  font-size: 28px;
+}
+
+section h3 {
+  color: #334155;
+  font-size: 22px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+section p, section li {
+  font-size: 21px;
+  color: #2D3748;
+}
+
+section ul, section ol {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+section li {
+  margin-bottom: 6px;
+}
+
+strong {
+  color: #0F172A;
+  font-weight: 700;
+}
+
+/* Tablas institucionales estilo Booktabs */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+th {
+  background-color: var(--upsjb-crimson);
+  color: #FFFFFF;
+  padding: 8px 12px;
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 2px solid #66001A;
+}
+
+td {
+  padding: 7px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  color: #1E293B;
+}
+
+tr:nth-child(even) td {
+  background-color: #F8FAFC;
+}
+
+/* Cajas de notas y destacados */
+blockquote {
+  border-left: 5px solid var(--upsjb-bright-red);
+  background-color: #FFF5F7;
+  padding: 10px 18px;
+  margin: 12px 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 20px;
+  color: #4A5568;
+}
+
+/* Código y bloques */
+pre, code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 17px;
+}
+
+pre {
+  background-color: #1E293B;
+  color: #F8FAFC;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+}
+
+/* Diagramas Mermaid */
+.mermaid {
+  background: transparent !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
+/* Clases de Layout en Columnas */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.columns-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+.badge-red { background-color: #DC2626; }
+.badge-orange { background-color: #EA580C; }
+.badge-yellow { background-color: #CA8A04; }
+.badge-green { background-color: #16A34A; }
+
+/* =========================================================================
+   DIAPOSITIVA DE PORTADA INSTITUCIONAL (Fondo Carmesí con Chevron Oficial)
+   ========================================================================= */
+section.portada {
+  background-image: url('assets/bg_portada.png');
+  background-size: 100% 100%;
+  color: #FFFFFF;
+  padding: 40px 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+section.portada .header-programa {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+section.portada .header-curso {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FEE2E2;
+  margin-bottom: 14px;
+}
+
+section.portada h1 {
+  color: #FFFFFF;
+  font-size: 29px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0 0 8px 0;
+  border-bottom: none;
+  padding-bottom: 0;
+  max-width: 66%;
+  text-transform: none;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+section.portada h2 {
+  color: #FED7AA;
+  font-size: 21px;
+  font-weight: 600;
+  margin: 0 0 14px 0;
+  border-bottom: none;
+  text-transform: none;
+  max-width: 66%;
+}
+
+section.portada .meta-box {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.28);
+  border-left: 4px solid #FFFFFF;
+  padding: 12px 18px;
+  border-radius: 0 8px 8px 0;
+  backdrop-filter: blur(4px);
+  margin-top: 8px;
+  max-width: 75%;
+}
+
+section.portada .meta-box p, section.portada .meta-box li {
+  color: #FFFFFF;
+  font-size: 15px;
+  margin: 2px 0;
+  line-height: 1.35;
+}
+
+section.portada .meta-box strong {
+  color: #FFF;
+}
+
+/* =========================================================================
+   DIAPOSITIVA SPLASH / APERTURA
+   ========================================================================= */
+section.splash {
+  background-image: url('assets/bg_splash.png');
+  background-size: 100% 100%;
+}
+
+/* =========================================================================
+   DIAPOSITIVA DE CIERRE INSTITUCIONAL ("Gracias" Oficial)
+   ========================================================================= */
+section.cierre {
+  background-image: url('assets/bg_cierre.png');
+  background-size: 100% 100%;
+}
+
+/* =========================================================================
+   ENCABEZADOS, PIE DE PÁGINA Y NUMERACIÓN
+   ========================================================================= */
+header {
+  font-size: 12px;
+  color: #64748B;
+  top: 18px;
+  left: 65px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+footer {
+  font-size: 11px;
+  color: #64748B;
+  bottom: 24px;
+  left: 65px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+section::after {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9C0028;
+  bottom: 24px;
+  right: 65px;
+}
+
+/* Ocultar header, footer y numeración en portadas, splash y cierre */
+section.portada::after,
+section.splash::after,
+section.cierre::after,
+section.no-footer::after {
+  display: none !important;
+  content: "" !important;
+}
+
+section.portada header, section.portada footer,
+section.splash header, section.splash footer,
+section.cierre header, section.cierre footer,
+section.no-footer header, section.no-footer footer {
+  display: none !important;
+}

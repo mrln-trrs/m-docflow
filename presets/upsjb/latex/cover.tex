@@ -1,0 +1,100 @@
+% =========================================================================
+% Plantilla de Portada Institucional y Hoja de Responsables (UPSJB)
+% =========================================================================
+
+% -------------------------------------------------------------------------
+% PÁGINA 1: CARÁTULA OFICIAL
+% -------------------------------------------------------------------------
+\begin{titlepage}
+  \thispagestyle{empty}
+  \centering
+
+  % Encabezado Institucional
+  {\fontsize{14pt}{18pt}\selectfont \textbf{\universidad}} \\[0.35cm]
+  {\fontsize{12pt}{16pt}\selectfont \textbf{\facultad}} \\[0.35cm]
+  {\fontsize{12pt}{16pt}\selectfont \textbf{\escuela}} \\[0.5cm]
+
+  \vfill
+
+  % Logotipo Oficial Centrado
+  \includegraphics[width=6.5cm]{logo_upsjb.png}
+
+  \vfill
+
+  % Título del Trabajo
+  {\fontsize{12pt}{15pt}\selectfont \textbf{TÍTULO}} \\[0.35cm]
+  {\fontsize{13pt}{17pt}\selectfont \textit{``\titulotrabajo''}} \\[0.7cm]
+
+  % Tipo de Trabajo
+  {\fontsize{12pt}{15pt}\selectfont \textbf{\tipotrabajo}} \\[0.6cm]
+
+  % Curso
+  {\fontsize{11pt}{14pt}\selectfont \textbf{CURSO}} \\[0.25cm]
+  {\fontsize{12pt}{15pt}\selectfont \textbf{\curso}} \\[0.5cm]
+
+  \vfill
+
+  % Sede y Año
+  {\fontsize{11pt}{14pt}\selectfont \textbf{\ciudadpais}} \\[0.25cm]
+  {\fontsize{12pt}{15pt}\selectfont \textbf{\anio}}
+
+\end{titlepage}
+
+% -------------------------------------------------------------------------
+% PÁGINA 2: HOJA DE RESPONSABLES (Opcional según switch en metadata.tex)
+% -------------------------------------------------------------------------
+\ifmostrarresponsables
+  \newpage
+  \pagenumbering{Roman}
+  \setcounter{page}{2}
+
+  % Estilo dinámico de encabezado y pie para todas las páginas preliminares
+  \fancypagestyle{estiloresponsables}{
+    \fancyhf{}
+    \fancyhead[R]{\normalsize \thepage}
+    \fancyfoot[R]{\small \textit{\titulocorto}}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+  }
+  \thispagestyle{estiloresponsables}
+
+  \vspace*{0.5cm}
+
+  {\noindent \fontsize{12pt}{16pt}\selectfont \textbf{RESPONSABLES}}
+
+  \vspace{0.8cm}
+
+  {\noindent \textbf{Profesor del curso}}
+  \begin{itemize}
+    \item \docente
+  \end{itemize}
+
+  \vspace{0.6cm}
+
+  {\noindent \textbf{Presentado por los estudiantes}}
+  \begin{itemize}
+    \estudiantes
+  \end{itemize}
+
+  \vspace{0.6cm}
+
+  {\noindent \textbf{Ciclo}}
+  \begin{itemize}
+    \item \ciclo
+  \end{itemize}
+
+  \vfill
+  \newpage
+\else
+  % Si no se muestran responsables, se continúa directamente
+  \newpage
+  \pagenumbering{Roman}
+  \setcounter{page}{2}
+  \fancypagestyle{estiloresponsables}{
+    \fancyhf{}
+    \fancyhead[R]{\normalsize \thepage}
+    \fancyfoot[R]{\small \textit{\titulocorto}}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+  }
+\fi

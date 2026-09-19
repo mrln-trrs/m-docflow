@@ -1,0 +1,31 @@
+# Dependencias y logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compilaciones y temporales de prueba
+dist/
+*.aux
+*.log
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+*.lot
+*.lof
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDEs
+.idea/
+*.suo
+*.user

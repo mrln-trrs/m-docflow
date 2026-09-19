@@ -1,0 +1,58 @@
+/* @theme generic */
+@import 'default';
+
+:root {
+  --primary-color: #2563eb;
+  --text-color: #1e293b;
+  --bg-color: #ffffff;
+}
+
+section {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  padding: 50px 70px;
+}
+
+section.lead {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+}
+
+section.lead h1 {
+  color: #60a5fa;
+  font-size: 42px;
+  border-bottom: none;
+}
+
+section h1 {
+  color: var(--primary-color);
+  font-size: 32px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+section th {
+  background-color: #f1f5f9;
+  border-bottom: 2px solid #cbd5e1;
+  padding: 10px;
+  text-align: left;
+}
+
+section td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 10px;
+}

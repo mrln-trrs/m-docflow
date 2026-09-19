@@ -1,0 +1,39 @@
+{
+  "name": "m-docflow",
+  "version": "1.0.0",
+  "description": "Framework modular para documentación académica y técnica (LaTeX APA 7 + Marp), desacoplado del código fuente y con soporte multi-institución.",
+  "type": "module",
+  "main": "src/cli.js",
+  "bin": {
+    "m-docflow": "./bin/m-docflow.js"
+  },
+  "scripts": {
+    "start": "node bin/m-docflow.js",
+    "test": "node bin/m-docflow.js presets"
+  },
+  "keywords": [
+    "academic",
+    "latex",
+    "marp",
+    "workflow",
+    "apa7",
+    "upsjb",
+    "documentation",
+    "m-core",
+    "slides",
+    "crossref"
+  ],
+  "author": "Marlon Omar Torres Espinoza (@marlon-mte)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marlon-mte/m-docflow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marlon-mte/m-docflow/issues"
+  },
+  "homepage": "https://github.com/marlon-mte/m-docflow#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

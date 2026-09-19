@@ -1,0 +1,28 @@
+% =========================================================================
+% ÍNDICES GENERALES (CONTENIDO, TABLAS Y FIGURAS)
+% =========================================================================
+\ifmostrarindices
+  \newpage
+  \thispagestyle{estiloresponsables}
+  \renewcommand{\contentsname}{\centering \fontsize{14pt}{18pt}\selectfont ÍNDICE GENERAL}
+  \tableofcontents
+  \newpage
+\fi
+
+\ifmostrarlistatablas
+  \newpage
+  \thispagestyle{estiloresponsables}
+  \renewcommand{\listtablename}{\centering \fontsize{14pt}{18pt}\selectfont ÍNDICE DE TABLAS}
+  \addcontentsline{toc}{section}{Índice de Tablas}
+  \listoftables
+  \newpage
+\fi
+
+\ifmostrarlistafiguras
+  \newpage
+  \thispagestyle{estiloresponsables}
+  \renewcommand{\listfigurename}{\centering \fontsize{14pt}{18pt}\selectfont ÍNDICE DE FIGURAS}
+  \addcontentsline{toc}{section}{Índice de Figuras}
+  \listoffigures
+  \newpage
+\fi

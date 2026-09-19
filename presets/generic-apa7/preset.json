@@ -1,0 +1,28 @@
+{
+  "id": "generic-apa7",
+  "name": "Generic APA 7th Edition",
+  "description": "Standard APA 7th Edition Paper format + Clean Modern Marp Theme",
+  "version": "1.0.0",
+  "author": "Marlon Omar Torres Espinoza",
+  "latex": {
+    "engine": "latexmk",
+    "documentclass": "\\documentclass[stu,12pt,letterpaper,floatsintext]{apa7}",
+    "setup": "latex/setup.tex",
+    "cover": "latex/cover.tex",
+    "defaults": {
+      "universidad": "Academic Institution",
+      "facultad": "Faculty of Engineering",
+      "escuela": "Computer Science & Systems",
+      "ciudadpais": "City -- Country",
+      "anio": "2026",
+      "ciclo": "I",
+      "tipotrabajo": "RESEARCH PAPER / REPORT",
+      "autor": "Author Name"
+    }
+  },
+  "marp": {
+    "theme": "marp/generic.css",
+    "themeName": "generic",
+    "assetsDir": ""
+  }
+}

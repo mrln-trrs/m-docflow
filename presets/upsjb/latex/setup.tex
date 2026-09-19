@@ -1,0 +1,36 @@
+% =========================================================================
+% Configuración Base del Framework APA 7 - UPSJB
+% =========================================================================
+
+% Ajuste de encabezados
+\setlength{\headheight}{16pt}
+
+% Idioma español con soporte "Tabla" en lugar de "Cuadro"
+\usepackage[spanish,es-tabla]{babel}
+
+% Paquetes de bibliografía oficial APA 7ma edición
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+% Tablas profesionales estilo APA
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{makecell}
+
+% Gráficos y diagramas vectoriales nativos TikZ
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows}
+
+% Soporte para incrustar páginas externas de PDFs (si se requiere)
+\usepackage{pdfpages}
+
+% Hipervínculos discretos según formato académico
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue!60!black
+}

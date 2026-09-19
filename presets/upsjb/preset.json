@@ -1,0 +1,30 @@
+{
+  "id": "upsjb",
+  "name": "Universidad Privada San Juan Bautista",
+  "description": "Formato institucional oficial UPSJB (APA 7ma Edición + Marp Theme Oficial)",
+  "version": "1.0.0",
+  "author": "Marlon Omar Torres Espinoza",
+  "latex": {
+    "engine": "latexmk",
+    "documentclass": "\\documentclass[stu,12pt,letterpaper,floatsintext]{apa7}",
+    "setup": "latex/setup.tex",
+    "cover": "latex/cover.tex",
+    "preliminariesDir": "latex/preliminaries",
+    "assetsDir": "latex/assets",
+    "defaults": {
+      "universidad": "UNIVERSIDAD PRIVADA SAN JUAN BAUTISTA",
+      "facultad": "FACULTAD DE INGENIERÍAS",
+      "escuela": "ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS",
+      "ciudadpais": "CHINCHA -- PERÚ",
+      "anio": "2026",
+      "ciclo": "VII",
+      "tipotrabajo": "PRODUCTO FORMATIVO / INFORME FINAL",
+      "autor": "Torres Espinoza, Marlon Omar"
+    }
+  },
+  "marp": {
+    "theme": "marp/upsjb.css",
+    "themeName": "upsjb",
+    "assetsDir": "marp/assets"
+  }
+}

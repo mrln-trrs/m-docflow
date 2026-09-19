@@ -1,0 +1,234 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { loadConfig } from './config.js';
+import { openFile } from './marp.js';
+
+function toTexPath(p) {
+  return p.replace(/\\/g, '/');
+}
+
+function escapeLatex(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/\\/g, '\\textbackslash{}')
+    .replace(/([&%$#_{}])/g, '\\$1')
+    .replace(/~/g, '\\textasciitilde{}')
+    .replace(/\^/g, '\\textasciicircum{}');
+}
+
+export function compileLatex(projectDir, options = {}) {
+  const config = loadConfig(projectDir);
+  const preset = config._preset;
+  const projectName = config.project || path.basename(projectDir);
+  const metadata = config.metadata || {};
+
+  console.log(`\x1b[36m[m-docflow]\x1b[0m Iniciando compilación de documento con Preset [\x1b[33m${preset.id}\x1b[0m]...`);
+
+  // Build directory in os.tmpdir() to prevent polluting OneDrive or local repo
+  const buildDir = path.join(os.tmpdir(), 'm-docflow-build', projectName);
+  fs.mkdirSync(buildDir, { recursive: true });
+
+  const docsDir = path.join(projectDir, 'docs');
+  const distDir = path.join(projectDir, 'dist');
+  fs.mkdirSync(distDir, { recursive: true });
+
+  const cuerpoDir = path.join(docsDir, 'cuerpo');
+  const figuresDir = path.join(docsDir, 'figures');
+  const anexosDir = path.join(docsDir, 'anexos');
+  const bibFile = path.join(docsDir, 'references.bib');
+
+  // Copy references.bib to buildDir
+  if (fs.existsSync(bibFile)) {
+    fs.copyFileSync(bibFile, path.join(buildDir, 'references.bib'));
+  } else {
+    fs.writeFileSync(path.join(buildDir, 'references.bib'), '% Empty bibliography\n', 'utf8');
+  }
+
+  // Determine paths from preset
+  const presetBase = preset._baseDir;
+  const setupFile = preset.latex?.setup ? path.join(presetBase, preset.latex.setup) : null;
+  const coverFile = preset.latex?.cover ? path.join(presetBase, preset.latex.cover) : null;
+  const presetAssetsDir = preset.latex?.assetsDir ? path.join(presetBase, preset.latex.assetsDir) : null;
+  const presetPrelimDir = preset.latex?.preliminariesDir ? path.join(presetBase, preset.latex.preliminariesDir) : null;
+
+  // Build graphicspath
+  const graphicsPaths = [];
+  if (presetAssetsDir && fs.existsSync(presetAssetsDir)) {
+    graphicsPaths.push(`{${toTexPath(presetAssetsDir)}/}`);
+  }
+  if (fs.existsSync(figuresDir)) {
+    graphicsPaths.push(`{${toTexPath(figuresDir)}/}`);
+  }
+  // Also project docs dir
+  graphicsPaths.push(`{${toTexPath(docsDir)}/}`);
+
+  // Build main.tex content
+  let tex = '';
+  tex += (preset.latex?.documentclass || '\\documentclass[stu,12pt,letterpaper,floatsintext]{apa7}') + '\n\n';
+
+  // Graphics path
+  tex += `% Configuración de rutas gráficas\n`;
+  tex += `\\usepackage{graphicx}\n`;
+  if (graphicsPaths.length > 0) {
+    tex += `\\graphicspath{${graphicsPaths.join('')}}\n\n`;
+  }
+
+  // Setup preamble
+  if (setupFile && fs.existsSync(setupFile)) {
+    tex += `% Setup institucional del preset\n`;
+    tex += `\\input{${toTexPath(setupFile)}}\n\n`;
+  }
+
+  // Metadata injection
+  tex += `% Metadatos del documento inyectados por m-docflow\n`;
+  const metaKeys = [
+    'universidad', 'facultad', 'escuela', 'ciudadpais', 'anio', 'ciclo',
+    'titulotrabajo', 'titulocorto', 'tipotrabajo', 'curso', 'docente', 'autor'
+  ];
+
+  for (const k of metaKeys) {
+    const val = metadata[k] || '';
+    tex += `\\providecommand{\\${k}}{${val}}\n`;
+    tex += `\\renewcommand{\\${k}}{${val}}\n`;
+  }
+
+  // Format student items
+  const autorVal = metadata.autor || metadata.author || 'Marlon Omar Torres Espinoza';
+  tex += `\\providecommand{\\estudiantes}{\\item ${autorVal}}\n`;
+  tex += `\\renewcommand{\\estudiantes}{\\item ${autorVal}}\n\n`;
+
+  // APA 7 title definitions
+  tex += `\\title{${metadata.titulotrabajo || 'Sin Título'}}\n`;
+  tex += `\\shorttitle{${metadata.titulocorto || metadata.titulotrabajo || ''}}\n`;
+  tex += `\\author{${autorVal}}\n`;
+  tex += `\\affiliation{${metadata.facultad || ''}, ${metadata.universidad || ''}}\n`;
+  tex += `\\course{${metadata.curso || ''}}\n`;
+  tex += `\\professor{${metadata.docente || ''}}\n\n`;
+
+  // Preliminaries switches (UPSJB compatible)
+  tex += `% Interruptores de estructura preliminar\n`;
+  const switches = [
+    'mostrarresponsables', 'mostrarportadilla', 'mostraragradecimiento',
+    'mostrardedicatoria', 'mostrarresumen', 'mostrarabstract',
+    'mostrarindices', 'mostrarlistatablas', 'mostrarlistafiguras', 'mostraranexos'
+  ];
+  for (const sw of switches) {
+    const isTrue = metadata[sw] !== false;
+    tex += `\\newif\\if${sw}   \\${sw}${isTrue ? 'true' : 'false'}\n`;
+  }
+  tex += '\n';
+
+  // Document start
+  tex += `\\begin{document}\n\n`;
+
+  // Cover
+  if (coverFile && fs.existsSync(coverFile)) {
+    tex += `% Carátula oficial\n\\input{${toTexPath(coverFile)}}\n\n`;
+  }
+
+  // Preliminaries: check local docs/preliminares or preset
+  if (presetPrelimDir && fs.existsSync(presetPrelimDir)) {
+    const prelimFiles = [
+      '01_portadilla.tex',
+      '02_agradecimiento.tex',
+      '03_dedicatoria.tex',
+      '04_resumen.tex',
+      '05_abstract.tex',
+      '06_indices.tex'
+    ];
+    for (const pf of prelimFiles) {
+      const localPf = path.join(docsDir, 'preliminares', pf);
+      const targetPf = fs.existsSync(localPf) ? localPf : path.join(presetPrelimDir, pf);
+      if (fs.existsSync(targetPf)) {
+        tex += `\\input{${toTexPath(targetPf)}}\n`;
+      }
+    }
+    tex += '\n';
+  }
+
+  // Body chapters (cuerpo)
+  tex += `% Cuerpo del documento (Capítulos)\n`;
+  tex += `\\newpage\n\\pagenumbering{arabic}\n\\setcounter{page}{1}\n\n`;
+
+  if (fs.existsSync(cuerpoDir)) {
+    const chapters = fs.readdirSync(cuerpoDir)
+      .filter(f => f.endsWith('.tex'))
+      .sort();
+
+    for (const chap of chapters) {
+      const chapPath = path.join(cuerpoDir, chap);
+      tex += `\\input{${toTexPath(chapPath)}}\n`;
+    }
+  }
+
+  // Bibliography
+  tex += `\n% Bibliografía\n\\newpage\n\\printbibliography\n\n`;
+
+  // Anexos if present
+  if (fs.existsSync(anexosDir)) {
+    const anexos = fs.readdirSync(anexosDir)
+      .filter(f => f.endsWith('.tex'))
+      .sort();
+    for (const anx of anexos) {
+      tex += `\\input{${toTexPath(path.join(anexosDir, anx))}}\n`;
+    }
+  }
+
+  tex += `\n\\end{document}\n`;
+
+  const mainTexPath = path.join(buildDir, 'main.tex');
+  fs.writeFileSync(mainTexPath, tex, 'utf8');
+
+  console.log(`  \x1b[90mCache de compilación: ${buildDir}\x1b[0m`);
+  console.log(`  \x1b[90mEjecutando latexmk (Biber + PDFLaTeX)... \x1b[0m`);
+
+  const latexmkArgs = [
+    '-pdf',
+    '-synctex=1',
+    '-interaction=nonstopmode',
+    `-outdir=${buildDir}`,
+    mainTexPath
+  ];
+
+  const result = spawnSync('latexmk', latexmkArgs, {
+    cwd: buildDir,
+    stdio: 'pipe',
+    encoding: 'utf8',
+    shell: true
+  });
+
+  const generatedPdf = path.join(buildDir, 'main.pdf');
+  const targetPdf = path.join(distDir, `${projectName}.pdf`);
+
+  if (!fs.existsSync(generatedPdf) || result.status !== 0) {
+    console.error('\x1b[31m✖ Error durante la compilación de LaTeX:\x1b[0m');
+    const logPath = path.join(buildDir, 'main.log');
+    if (fs.existsSync(logPath)) {
+      const logContent = fs.readFileSync(logPath, 'utf8');
+      const errorLines = logContent
+        .split('\n')
+        .filter(l => l.startsWith('!') || l.includes('Error:'))
+        .slice(0, 10);
+      console.error(errorLines.join('\n'));
+    }
+    if (result.stderr) {
+      console.error(result.stderr.slice(-1000));
+    }
+    throw new Error(`Fallo de compilación con código ${result.status}. Revisa los errores arriba.`);
+  }
+
+  // Copy resulting PDF to dist
+  fs.copyFileSync(generatedPdf, targetPdf);
+  const stats = fs.statSync(targetPdf);
+  const sizeMb = (stats.size / (1024 * 1024)).toFixed(2);
+
+  console.log(`\x1b[32m✔ Documento compilado con éxito:\x1b[0m ${targetPdf} (${sizeMb} MB)`);
+
+  if (options.open) {
+    openFile(targetPdf);
+  }
+
+  return targetPdf;
+}
