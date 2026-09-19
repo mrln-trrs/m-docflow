@@ -1,0 +1,32 @@
+{
+  "id": "unica",
+  "name": "Universidad Nacional San Luis Gonzaga",
+  "description": "Formato institucional oficial UNICA - San Luis Gonzaga de Ica (Arial 10pt, Interlineado 1.5, Membrete Oficial)",
+  "version": "1.0.0",
+  "author": "Marlon Omar Torres Espinoza",
+  "latex": {
+    "engine": "latexmk",
+    "documentclass": "\\documentclass[10pt,letterpaper]{article}",
+    "setup": "latex/setup.tex",
+    "cover": "latex/cover.tex",
+    "preliminariesDir": "latex/preliminaries",
+    "assetsDir": "latex/assets",
+    "bodyStyle": "unica",
+    "spacing": "\\onehalfspacing",
+    "bibHeading": "Referencias Bibliográficas",
+    "defaults": {
+      "universidad": "UNIVERSIDAD NACIONAL ``SAN LUIS GONZAGA''",
+      "facultad": "FACULTAD DE CIENCIAS DE LA COMUNICACIÓN, TURISMO Y ARQUEOLOGÍA",
+      "escuela": "ESCUELA PROFESIONAL DE CIENCIAS DE LA COMUNICACIÓN",
+      "ciudadpais": "ICA -- PERÚ",
+      "anio": "2026",
+      "tipotrabajo": "MONOGRAFÍA ACADÉMICA",
+      "autor": "Rojas Valencia, Andrea"
+    }
+  },
+  "marp": {
+    "theme": "marp/unica.css",
+    "themeName": "unica",
+    "assetsDir": "marp/assets"
+  }
+}

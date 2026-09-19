@@ -1,0 +1,130 @@
+/* @theme unica */
+@import 'default';
+
+:root {
+  --unica-navy: #0b2240;
+  --unica-navy-light: #16365f;
+  --unica-gold: #c49a45;
+  --unica-gold-light: #dfb76c;
+  --unica-text: #1f2937;
+  --unica-bg: #ffffff;
+  --unica-muted: #6b7280;
+}
+
+section {
+  font-family: Arial, 'Segoe UI', Helvetica, sans-serif;
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--unica-text);
+  background-color: var(--unica-bg);
+  padding: 45px 65px;
+}
+
+section h1 {
+  color: var(--unica-navy);
+  font-size: 32px;
+  font-weight: bold;
+  border-bottom: 3px solid var(--unica-gold);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+section h2 {
+  color: var(--unica-navy-light);
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+section h3 {
+  color: var(--unica-gold);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Portada institucional UNICA */
+section.lead {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(145deg, #0b2240 0%, #16365f 60%, #08172c 100%);
+  color: #ffffff;
+}
+
+section.lead h1 {
+  color: #ffffff;
+  font-size: 38px;
+  border-bottom: 3px solid var(--unica-gold);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+section.lead h2 {
+  color: var(--unica-gold-light);
+  font-size: 24px;
+  font-weight: 400;
+}
+
+section.lead p {
+  color: #e2e8f0;
+  font-size: 18px;
+}
+
+/* Diapositiva de cierre */
+section.cierre {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #0b2240 0%, #1a3a60 100%);
+  color: #ffffff;
+}
+
+section.cierre h1 {
+  color: var(--unica-gold);
+  font-size: 46px;
+  border-bottom: none;
+}
+
+/* Tablas con diseño institucional */
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 18px;
+}
+
+section th {
+  background-color: var(--unica-navy);
+  color: #ffffff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+section td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 12px;
+}
+
+section tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+/* Citas y destacados */
+blockquote {
+  border-left: 4px solid var(--unica-gold);
+  padding-left: 15px;
+  color: #4b5563;
+  font-style: italic;
+  background: #f9fafb;
+  padding: 10px 15px;
+}
+
+footer {
+  font-size: 12px;
+  color: var(--unica-muted);
+}

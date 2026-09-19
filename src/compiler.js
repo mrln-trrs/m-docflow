@@ -40,6 +40,26 @@ export function compileLatex(projectDir, options = {}) {
   } else {
     fs.writeFileSync(path.join(buildDir, 'references.bib'), '% Empty bibliography\n', 'utf8');
   }
+  // Ensure figures and assets exist in buildDir so relative \includegraphics{figures/...} or \includegraphics{figuras/...} work
+  try {
+    const buildFigures = path.join(buildDir, 'figures');
+    const buildFiguras = path.join(buildDir, 'figuras');
+    if (fs.existsSync(figuresDir)) {
+      if (!fs.existsSync(buildFigures)) fs.symlinkSync(figuresDir, buildFigures, 'junction');
+      if (!fs.existsSync(buildFiguras)) fs.symlinkSync(figuresDir, buildFiguras, 'junction');
+    }
+  } catch {}
+
+  // Also ensure docsDir has bidirectional figures/figuras compatibility
+  try {
+    const docFigures = path.join(docsDir, 'figures');
+    const docFiguras = path.join(docsDir, 'figuras');
+    if (fs.existsSync(docFiguras) && !fs.existsSync(docFigures)) {
+      fs.symlinkSync(docFiguras, docFigures, 'junction');
+    } else if (fs.existsSync(docFigures) && !fs.existsSync(docFiguras)) {
+      fs.symlinkSync(docFigures, docFiguras, 'junction');
+    }
+  } catch {}
 
   // Determine paths from preset
   const presetBase = preset._baseDir;
@@ -47,6 +67,13 @@ export function compileLatex(projectDir, options = {}) {
   const coverFile = preset.latex?.cover ? path.join(presetBase, preset.latex.cover) : null;
   const presetAssetsDir = preset.latex?.assetsDir ? path.join(presetBase, preset.latex.assetsDir) : null;
   const presetPrelimDir = preset.latex?.preliminariesDir ? path.join(presetBase, preset.latex.preliminariesDir) : null;
+
+  try {
+    const buildAssets = path.join(buildDir, 'assets');
+    if (presetAssetsDir && fs.existsSync(presetAssetsDir) && !fs.existsSync(buildAssets)) {
+      fs.symlinkSync(presetAssetsDir, buildAssets, 'junction');
+    }
+  } catch {}
 
   // Build graphicspath
   const graphicsPaths = [];
@@ -60,8 +87,9 @@ export function compileLatex(projectDir, options = {}) {
   if (fs.existsSync(altFiguresDir) && altFiguresDir !== figuresDir) {
     graphicsPaths.push(`{${toTexPath(altFiguresDir)}/}`);
   }
-  // Also project docs dir
+  // Also project docs dir and build dir
   graphicsPaths.push(`{${toTexPath(docsDir)}/}`);
+  graphicsPaths.push(`{${toTexPath(buildDir)}/}`);
 
   // Build main.tex content
   let tex = '\\PassOptionsToPackage{plainpages=false,pdfpagelabels=true}{hyperref}\n';
@@ -117,20 +145,22 @@ export function compileLatex(projectDir, options = {}) {
   tex += `\\providecommand{\\estudiantes}{\n  ${estudiantesTex}\n}\n`;
   tex += `\\renewcommand{\\estudiantes}{\n  ${estudiantesTex}\n}\n\n`;
 
-  // APA 7 title definitions
-  tex += `\\title{${metadata.titulotrabajo || 'Sin Título'}}\n`;
-  tex += `\\shorttitle{${metadata.titulocorto || metadata.titulotrabajo || ''}}\n`;
-  tex += `\\author{${autorVal}}\n`;
-  tex += `\\affiliation{${metadata.facultad || ''}, ${metadata.universidad || ''}}\n`;
-  tex += `\\course{${metadata.curso || ''}}\n`;
-  tex += `\\professor{${metadata.docente || ''}}\n\n`;
+  // APA 7 title definitions (only if class is apa7)
+  if (!preset.latex?.documentclass || preset.latex.documentclass.includes('apa7')) {
+    tex += `\\title{${metadata.titulotrabajo || 'Sin Título'}}\n`;
+    tex += `\\shorttitle{${metadata.titulocorto || metadata.titulotrabajo || ''}}\n`;
+    tex += `\\author{${autorVal}}\n`;
+    tex += `\\affiliation{${metadata.facultad || ''}, ${metadata.universidad || ''}}\n`;
+    tex += `\\course{${metadata.curso || ''}}\n`;
+    tex += `\\professor{${metadata.docente || ''}}\n\n`;
+  }
 
-  // Preliminaries switches (UPSJB compatible)
+  // Preliminaries switches (UPSJB & UNICA compatible)
   tex += `% Interruptores de estructura preliminar\n`;
   const switches = [
     'mostrarresponsables', 'mostrarportadilla', 'mostraragradecimiento',
     'mostrardedicatoria', 'mostrarresumen', 'mostrarabstract',
-    'mostrarindices', 'mostrarlistatablas', 'mostrarlistafiguras', 'mostraranexos'
+    'mostrarindices', 'mostrarindice', 'mostrarlistatablas', 'mostrarlistafiguras', 'mostraranexos'
   ];
   for (const sw of switches) {
     const isTrue = metadata[sw] !== false;
@@ -147,17 +177,23 @@ export function compileLatex(projectDir, options = {}) {
   }
 
   // Preliminaries: check local docs/preliminares or preset
+  const prelimFiles = new Set();
+  const localPrelimDir = path.join(docsDir, 'preliminares');
+  if (fs.existsSync(localPrelimDir)) {
+    fs.readdirSync(localPrelimDir)
+      .filter(f => f.endsWith('.tex'))
+      .forEach(f => prelimFiles.add(f));
+  }
   if (presetPrelimDir && fs.existsSync(presetPrelimDir)) {
-    const prelimFiles = [
-      '01_portadilla.tex',
-      '02_agradecimiento.tex',
-      '03_dedicatoria.tex',
-      '04_resumen.tex',
-      '05_abstract.tex',
-      '06_indices.tex'
-    ];
-    for (const pf of prelimFiles) {
-      const localPf = path.join(docsDir, 'preliminares', pf);
+    fs.readdirSync(presetPrelimDir)
+      .filter(f => f.endsWith('.tex'))
+      .forEach(f => prelimFiles.add(f));
+  }
+
+  if (prelimFiles.size > 0) {
+    const sortedPrelims = Array.from(prelimFiles).sort();
+    for (const pf of sortedPrelims) {
+      const localPf = path.join(localPrelimDir, pf);
       const targetPf = fs.existsSync(localPf) ? localPf : path.join(presetPrelimDir, pf);
       if (fs.existsSync(targetPf)) {
         tex += `\\input{${toTexPath(targetPf)}}\n`;
@@ -169,8 +205,14 @@ export function compileLatex(projectDir, options = {}) {
   // Body chapters (cuerpo)
   tex += `% Cuerpo del documento (Capítulos)\n`;
   tex += `\\clearpage\n\\edef\\temppagenum{\\the\\value{page}}\n\\pagenumbering{arabic}\n\\setcounter{page}{\\temppagenum}\n\n`;
-  tex += `% Estilo continuo de encabezado para el cuerpo del trabajo\n`;
-  tex += `\\fancypagestyle{estilocuerpo}{\n  \\fancyhf{}\n  \\fancyhead[L]{\\small \\textit{\\titulocorto}}\n  \\fancyhead[R]{\\normalsize \\thepage}\n  \\renewcommand{\\headrulewidth}{0.4pt}\n  \\renewcommand{\\footrulewidth}{0pt}\n}\n\\pagestyle{estilocuerpo}\n\\doublespacing\n\n`;
+
+  const bodyStyle = preset.latex?.bodyStyle || 'apa';
+  if (bodyStyle === 'apa') {
+    tex += `% Estilo continuo de encabezado para el cuerpo del trabajo (APA)\n`;
+    tex += `\\fancypagestyle{estilocuerpo}{\n  \\fancyhf{}\n  \\fancyhead[L]{\\small \\textit{\\titulocorto}}\n  \\fancyhead[R]{\\normalsize \\thepage}\n  \\renewcommand{\\headrulewidth}{0.4pt}\n  \\renewcommand{\\footrulewidth}{0pt}\n}\n\\pagestyle{estilocuerpo}\n`;
+  }
+  const spacingCmd = preset.latex?.spacing || (bodyStyle === 'apa' ? '\\doublespacing' : '\\onehalfspacing');
+  tex += `${spacingCmd}\n\n`;
 
   if (fs.existsSync(cuerpoDir)) {
     const chapters = fs.readdirSync(cuerpoDir)
@@ -184,7 +226,12 @@ export function compileLatex(projectDir, options = {}) {
   }
 
   // Bibliography
-  tex += `\n% Bibliografía\n\\newpage\n\\printbibliography\n\n`;
+  if (preset.latex?.bibHeading) {
+    const heading = preset.latex.bibHeading;
+    tex += `\n% Bibliografía\n\\newpage\n\\begin{center}\n  {\\fontsize{10pt}{13pt}\\selectfont \\textbf{${heading.toUpperCase()}}}\n\\end{center}\n\\vspace{0.4cm}\n\\addcontentsline{toc}{section}{${heading}}\n\n\\nocite{*}\n\\printbibliography[heading=none]\n\n`;
+  } else {
+    tex += `\n% Bibliografía\n\\newpage\n\\printbibliography\n\n`;
+  }
 
   // Anexos if present
   if (fs.existsSync(anexosDir)) {

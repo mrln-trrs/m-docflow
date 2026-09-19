@@ -269,6 +269,7 @@ PROTOCOLO OBLIGATORIO DE EJECUCIÓN (m-docflow):
 | Preset | Institución / Estándar | Características |
 | :--- | :--- | :--- |
 | **`upsjb`** | **Universidad Privada San Juan Bautista** | APA 7ma Edición, carátula con escudo oficial, preliminares romanos, tablas apaisadas `landscape` y tema Marp institucional. |
+| **`unica`** | **Universidad Nacional San Luis Gonzaga (Ica)** | Arial 10pt, interlineado 1.5, membrete institucional oficial en cabecera, carátula oficial y tema Marp institucional UNICA. |
 | **`generic-apa7`** | **Estándar Académico Global** | APA 7 neutro estudiantil/profesional + Diapositivas minimalistas ejecutivas. |
 
 ### Cómo Crear un Preset para otra Universidad:
