@@ -3,7 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { loadConfig } from './config.js';
-import { resolveSlidesDirs, saveVersionedOutput } from './versioning.js';
+import { resolveSlidesDirs, saveVersionedOutput, getCourseAcronym } from './versioning.js';
 
 export function compileSlides(projectDir, options = {}) {
   const config = loadConfig(projectDir);
@@ -64,13 +64,17 @@ export function compileSlides(projectDir, options = {}) {
     throw new Error(`Marp finalizó con código de error ${result.status}`);
   }
 
+  // BasePrefix con Tipo + Siglas (ej: PRESENTACION-CN)
+  const siglas = config.siglas || config.metadata?.siglas || getCourseAcronym(config.metadata?.curso || projectName);
+  const basePrefix = `PRESENTACION-${siglas}`;
+
   // Guardar entregable versionado en PDF-presentacion/
-  const delivery = saveVersionedOutput(outDir, `${projectName}_presentacion`, tmpOutputFile, format, {
+  const delivery = saveVersionedOutput(outDir, basePrefix, tmpOutputFile, format, {
     tag: options.tag,
     note: options.note
   });
 
-  console.log(`\x1b[32m✔ Diapositivas generadas con éxito [${delivery.version}]:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
+  console.log(`\x1b[32m✔ Diapositivas generadas con éxito:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
   console.log(`  \x1b[90mAcceso rápido última versión: ${delivery.latestFileName}\x1b[0m`);
   console.log(`  \x1b[90mHistorial registrado en     : ${path.join(outDir, 'HISTORIAL.md')}\x1b[0m`);
 

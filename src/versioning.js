@@ -1,28 +1,54 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-function formatDate(date = new Date()) {
+export function getCourseAcronym(courseName) {
+  if (!courseName) return 'DOC';
+  const trimmed = courseName.trim();
+  
+  // Si ya es una sigla en mayúsculas (ej: IA, ERP, BI)
+  if (/^[A-Z0-9]{2,5}$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  const stopWords = new Set([
+    'de', 'del', 'la', 'las', 'el', 'los', 'en', 'y', 'e', 'a', 'al', 'con', 'por', 'para', 'un', 'una'
+  ]);
+
+  // Quitar tildes y caracteres especiales
+  const normalized = trimmed
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9\s]/g, ' ')
+    .trim();
+
+  const words = normalized.split(/\s+/).filter(w => w && !stopWords.has(w.toLowerCase()));
+  if (words.length === 0) return 'DOC';
+
+  return words.map(w => w[0].toUpperCase()).join('');
+}
+
+export function formatTimestamp(date = new Date()) {
   const pad = n => String(n).padStart(2, '0');
   const yyyy = date.getFullYear();
   const mm = pad(date.getMonth() + 1);
   const dd = pad(date.getDate());
   const hh = pad(date.getHours());
   const min = pad(date.getMinutes());
-  return `${yyyy}-${mm}-${dd}_${hh}-${min}`;
+  const ss = pad(date.getSeconds());
+  return `${yyyy}-${mm}-${dd}-${hh}${min}${ss}`;
 }
 
-function formatHumanDate(date = new Date()) {
+export function formatHumanDate(date = new Date()) {
   const pad = n => String(n).padStart(2, '0');
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
-function cleanTagString(tag) {
+export function cleanTagString(tag) {
   if (!tag) return '';
   return tag
     .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]/gi, '-')
-    .replace(/-+/g, '-');
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
 export function resolveDocDirs(projectDir) {
@@ -83,50 +109,37 @@ export function resolveSlidesDirs(projectDir) {
   };
 }
 
-export function saveVersionedOutput(outDir, baseName, tempFilePath, ext, options = {}) {
+export function saveVersionedOutput(outDir, basePrefix, tempFilePath, ext, options = {}) {
   fs.mkdirSync(outDir, { recursive: true });
 
-  const existingFiles = fs.readdirSync(outDir);
-  const vRegex = new RegExp(`^${baseName}_v(\\d+)`, 'i');
-
-  let maxVersion = 0;
-  for (const file of existingFiles) {
-    const match = file.match(vRegex);
-    if (match) {
-      const vNum = parseInt(match[1], 10);
-      if (vNum > maxVersion) maxVersion = vNum;
-    }
-  }
-
-  const nextVersion = maxVersion + 1;
   const now = new Date();
-  const dateStamp = formatDate(now);
-  const tagStr = options.tag ? `_${cleanTagString(options.tag)}` : '';
+  const timestamp = formatTimestamp(now);
+  const tagStr = options.tag ? `-${cleanTagString(options.tag)}` : '';
 
-  // Main versioned file: BaseName_v1_2026-09-19_10-45_avance.pdf
-  const versionedFileName = `${baseName}_v${nextVersion}_${dateStamp}${tagStr}.${ext}`;
+  // Formato estricto solicitado: TIPO-SIGLAS-AAAA-MM-DD-HHMMSS[-TAG].ext
+  // Ejemplo: LRPD-CN-2026-09-19-104730.pdf
+  const versionedFileName = `${basePrefix}-${timestamp}${tagStr}.${ext}`;
   const versionedPath = path.join(outDir, versionedFileName);
 
-  // Copy to versioned path (never overwriting old files)
+  // Copiar a la ruta versionada
   fs.copyFileSync(tempFilePath, versionedPath);
 
-  // Also create/update the "LATEST" or "ACTUAL" pointer file
-  const latestFileName = `${baseName}_ACTUAL.${ext}`;
+  // Copia de acceso rápido: TIPO-SIGLAS-ACTUAL.ext
+  const latestFileName = `${basePrefix}-ACTUAL.${ext}`;
   const latestPath = path.join(outDir, latestFileName);
   fs.copyFileSync(tempFilePath, latestPath);
 
-  // Stats
+  // Estadísticas del archivo
   const stat = fs.statSync(versionedPath);
   const sizeMb = (stat.size / (1024 * 1024)).toFixed(2);
   const sizeStr = stat.size > 1024 * 1024 ? `${sizeMb} MB` : `${(stat.size / 1024).toFixed(0)} KB`;
 
-  // Update or create HISTORIAL.md
+  // Registrar en HISTORIAL.md
   updateHistoryLog(outDir, {
-    version: `v${nextVersion}`,
     fileName: versionedFileName,
     date: formatHumanDate(now),
     size: sizeStr,
-    note: options.tag || options.note || (nextVersion === 1 ? 'Versión inicial' : 'Actualización de contenido')
+    note: options.tag || options.note || 'Entrega registrada'
   });
 
   return {
@@ -134,7 +147,7 @@ export function saveVersionedOutput(outDir, baseName, tempFilePath, ext, options
     versionedFileName,
     latestPath,
     latestFileName,
-    version: `v${nextVersion}`,
+    timestamp,
     sizeStr
   };
 }
@@ -147,15 +160,15 @@ function updateHistoryLog(outDir, entry) {
   if (isNew) {
     const dirName = path.basename(outDir);
     content += `# 📜 Control de Versiones y Registro de Avances (${dirName})\n\n`;
-    content += `Este directorio almacena el historial cronológico de entregables generados con **m-docflow**.\n`;
-    content += `Ninguna versión anterior se sobrescribe. El archivo con sufijo \`_ACTUAL\` siempre contiene la versión más reciente para subir a Blackboard o entregar.\n\n`;
-    content += `| Versión | Archivo Entregable | Fecha y Hora | Tamaño | Etiqueta / Avance |\n`;
-    content += `| :--- | :--- | :--- | :--- | :--- |\n`;
+    content += `Este directorio almacena el historial cronológico de entregables generados con **m-docflow** bajo el estándar de sellado \`AAAA-MM-DD-HHMMSS\`.\n`;
+    content += `Ninguna versión anterior se sobrescribe. El archivo \`...-ACTUAL\` contiene la versión más reciente para subir a Blackboard o entregar.\n\n`;
+    content += `| Archivo Entregable | Fecha y Hora | Tamaño | Etiqueta / Avance |\n`;
+    content += `| :--- | :--- | :--- | :--- |\n`;
   } else {
     content = fs.readFileSync(historyPath, 'utf8');
   }
 
-  const row = `| **${entry.version}** | [\`${entry.fileName}\`](./${entry.fileName}) | ${entry.date} | ${entry.size} | ${entry.note} |\n`;
+  const row = `| [\`${entry.fileName}\`](./${entry.fileName}) | ${entry.date} | ${entry.size} | ${entry.note} |\n`;
   content += row;
 
   fs.writeFileSync(historyPath, content, 'utf8');

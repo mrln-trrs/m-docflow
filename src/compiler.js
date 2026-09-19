@@ -4,7 +4,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { loadConfig } from './config.js';
 import { openFile } from './marp.js';
-import { resolveDocDirs, saveVersionedOutput } from './versioning.js';
+import { resolveDocDirs, saveVersionedOutput, getCourseAcronym } from './versioning.js';
 
 function toTexPath(p) {
   return p.replace(/\\/g, '/');
@@ -238,13 +238,18 @@ export function compileLatex(projectDir, options = {}) {
     throw new Error(`Fallo de compilación con código ${result.status}. Revisa los errores arriba.`);
   }
 
+  // BasePrefix con Tipo + Siglas (ej: LRPD-CN)
+  const docType = (config.type || 'lrpd').toUpperCase();
+  const siglas = config.siglas || config.metadata?.siglas || getCourseAcronym(config.metadata?.curso || projectName);
+  const basePrefix = `${docType}-${siglas}`;
+
   // Guardar entregable versionado en PDF-documentacion/
-  const delivery = saveVersionedOutput(outDir, projectName, generatedPdf, 'pdf', {
+  const delivery = saveVersionedOutput(outDir, basePrefix, generatedPdf, 'pdf', {
     tag: options.tag,
     note: options.note
   });
 
-  console.log(`\x1b[32m✔ Documento compilado con éxito [${delivery.version}]:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
+  console.log(`\x1b[32m✔ Documento compilado con éxito:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
   console.log(`  \x1b[90mAcceso rápido última versión: ${delivery.latestFileName}\x1b[0m`);
   console.log(`  \x1b[90mHistorial registrado en     : ${path.join(outDir, 'HISTORIAL.md')}\x1b[0m`);
 
