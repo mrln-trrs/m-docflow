@@ -2,12 +2,12 @@
 
 # ⚡ m-docflow
 
-**Modular Academic & Technical Documentation Engine**  
-*Desacopla el desarrollo de software de la redacción académica y presentaciones institucionales.*
+**Framework Modular de Documentación Académica, Presentaciones Técnicas y Desacoplamiento de Código**  
+*Desarrollado para eliminar la duplicación de plantillas, evitar el bloqueo de archivos en OneDrive y permitir un flujo ágil con o sin asistencia de agentes de Inteligencia Artificial.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node: >=18.0.0](https://img.shields.io/badge/Node->=18.0.0-green.svg)](https://nodejs.org/)
-[![LaTeX: TeXLive](https://img.shields.io/badge/LaTeX-TeX%20Live%202026-orange.svg)](https://www.tug.org/texlive/)
+[![LaTeX: MiKTeX / TeXLive](https://img.shields.io/badge/LaTeX-MiKTeX%20%7C%20TeXLive-orange.svg)](https://miktex.org/)
 [![Slides: Marp](https://img.shields.io/badge/Presentations-Marp%20CLI-pink.svg)](https://marp.app/)
 [![Author: Marlon Torres](https://img.shields.io/badge/Author-Marlon%20Omar%20Torres%20Espinoza-black.svg)](https://github.com/marlon-mte)
 
@@ -15,171 +15,291 @@
 
 </div>
 
-## 📌 ¿Por qué nace m-docflow?
+## 📌 1. ¿Por qué nace m-docflow?
 
-En carreras de ingeniería y tecnología, los proyectos universitarios y de investigación suelen requerir simultáneamente:
-1. **Desarrollo de software real:** APIs, microservicios, bases de datos, aplicaciones móviles o scripts.
+En carreras de ingeniería y tecnología, los cursos universitarios y proyectos de investigación demandan simultáneamente:
+1. **Desarrollo de software real:** APIs, microservicios, bases de datos, código en Python, Node, Flutter o Docker.
 2. **Documentación formal:** Informes académicos rigurosos bajo normas APA 7ma Edición, IEEE o formatos institucionales.
 3. **Presentaciones ejecutivas:** Diapositivas con identidad visual corporativa.
 
-### El Problema Común
-Tener que copiar en cada curso o repositorio decenas de scripts de compilación (`build.ps1`), tareas de VS Code, temas CSS de Marp, plantillas de carátula y configuraciones de LaTeX produce:
-- **Contaminación de carpetas:** Archivos de código fuente mezclados con 15 archivos temporales de LaTeX (`.aux`, `.bbl`, `.fls`, `.log`).
-- **Problemas con OneDrive / Git:** OneDrive bloquea archivos temporales y se vuelve lento sincronizando cientos de micro-archivos de compilación.
-- **Sobrecarga para Agentes de IA:** Asistentes como Antigravity, Claude o Codex se confunden al ver archivos de LaTeX y presentaciones cuando solo se les pide programar.
+### Los Dolores del Flujo Tradicional
+Tener que copiar en cada curso decenas de scripts de compilación (`build.ps1`), tareas de VS Code, temas CSS de Marp, carátulas y paquetes de LaTeX produce cuatro grandes problemas:
+* **Duplicación masiva (*Tooling Bloat*):** Cada curso termina con 5 scripts idénticos, carátulas repetidas y configuraciones duplicadas. Modificar un estilo implica editar 6 carpetas a mano.
+* **Fricción con OneDrive y Git:** Cada compilación de LaTeX genera entre 15 y 25 micro-archivos temporales (`.aux`, `.bbl`, `.fls`, `.log`, `.synctex.gz`). OneDrive intenta sincronizarlos en tiempo real, bloqueando lecturas en Windows y saturando la nube.
+* **Contaminación de contexto para Agentes de IA:** Asistentes como **Antigravity, Claude Code, Codex o Cursor** se saturan al ver código de software mezclado con miles de líneas de LaTeX y archivos de presentación.
+* **Pérdida de historial de versiones:** Al compilar, se suele sobrescribir el archivo `main.pdf`, perdiendo el registro de qué cambió entre semana y semana.
 
 ### La Solución: m-docflow
-**`m-docflow`** actúa como un **marco de trabajo exterior (Engine)**:
-- Tus proyectos y cursos solo contienen **código limpio (`src/`)**, **redacción pura (`docs/`)** y **diapositivas (`slides/`)**.
-- Toda la fontanería (compiladores, temas de Marp, carátulas y assets) vive centralizada en `m-docflow`.
-- Compila en una memoria caché temporal aislada (`%TEMP%`) y deposita únicamente el PDF final en `dist/`.
+**`m-docflow`** actúa como un **motor exterior desacoplado (Engine)**:
+* Vive en un repositorio central (`D:\proyectos\m-docflow`) y se ejecuta de forma global.
+* Tus cursos solo contienen **redacción pura (`documentacion/`)**, **código puro (`codigo/`)** y **diapositivas puras (`presentacion/`)**.
+* La compilación ocurre en una memoria caché temporal aislada (`%TEMP%`), dejando **cero archivos basura en el curso**.
+* Exporta entregables versionados automáticamente bajo el estándar estricto: **`TIPO-SIGLAS-AAAA-MM-DD-HHMMSS.pdf`**.
 
 ---
 
-## 🏛️ Sistema de Presets Multi-Institución
+## ⚡ 2. Instalación Rápida en 1 Clic (Para Ti y tus Compañeros)
 
-`m-docflow` no tiene código quemado para una sola institución. Utiliza un motor de **Presets** intercambiables:
+Diseñamos un proceso de instalación desatendido que no requiere conocimientos avanzados de terminal:
 
-| Preset | Institución / Estándar | Características |
-| :--- | :--- | :--- |
-| **`upsjb`** | **Universidad Privada San Juan Bautista** | APA 7ma Edición, Carátula institucional con logo oficial, páginas preliminares formales (portadilla, agradecimientos, dedicatoria, resúmenes, índices) y tema oficial Marp con fondos institucionales. |
-| **`generic-apa7`** | **Estándar Académico Global** | Documento APA 7 neutro estudiantil/profesional + Diapositivas ejecutivas minimalistas. |
-| *Comunidad* | *Extensible* | Cualquiera puede agregar su universidad (`unmsm`, `uni`, `pucp`) o formato (`ieee`). |
+### Opción A: Doble Clic en Windows (El más rápido)
+1. Clona o descarga este repositorio:
+   ```bash
+   git clone https://github.com/marlon-mte/m-docflow.git
+   ```
+2. Entra a la carpeta y haz **doble clic en `setup.bat`** (o ejecuta `.\setup.ps1` en PowerShell).
 
----
+> **¿Qué hace el instalador automáticamente?**
+> * Instala **Node.js** (si no lo tienes).
+> * Instala **MiKTeX** (~200 MB en ~3 minutos, en lugar de TeX Live que pesa ~8 GB y demora horas).
+> * Configura MiKTeX para que descargue cualquier paquete faltante de forma transparente y silenciosa.
+> * Instala **Marp CLI** para diapositivas.
+> * Instala las extensiones visuales de **VS Code** (`Marp for VS Code` y `LaTeX Workshop`).
+> * Enlaza el comando global `m-docflow` en tu computadora.
 
-## 🚀 Instalación Rápida
-
-### Opción A: Instalación Automática en 1 Clic (Windows)
-Ejecuta en PowerShell como Administrador dentro de la carpeta del proyecto:
-```powershell
-.\setup.ps1
-```
-> El script descarga e instala automáticamente **Node.js**, **MiKTeX** (~200MB, 3 min), **Marp CLI**, extensiones de **VS Code** y registra el comando global `m-docflow`. Consulta [INSTALACION.md](INSTALACION.md) para más detalles.
-
-### Opción B: Diagnóstico del Sistema
-Para verificar si tu computadora ya cuenta con todas las herramientas necesarias:
+### Opción B: Diagnóstico con `m-docflow doctor`
+Para verificar si tu máquina ya tiene todas las herramientas listas:
 ```bash
 m-docflow doctor
 ```
 
-### Opción C: Instalación Manual
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/marlon-mte/m-docflow.git
-cd m-docflow
+```text
+╔════════════════════════════════════════════════════════════╗
+║             m-docflow :: Diagnóstico del Sistema           ║
+║        Verificación de Herramientas y Dependencias         ║
+╚════════════════════════════════════════════════════════════╝
 
-# 2. Instalar Marp CLI
-npm install -g @marp-team/marp-cli
-
-# 3. Enlazar comando global en tu sistema
-npm link
+[✔ INSTALADO] Node.js                      (v22.23.1)
+[✔ INSTALADO] NPM                          (10.9.8)
+[✔ INSTALADO] LaTeX Compiler (latexmk)     (v4.83)
+[✔ INSTALADO] Biber (BibLaTeX APA 7)       (v2.22)
+[✔ INSTALADO] Marp CLI (Presentaciones)    (v4.5.1)
+[✔ INSTALADO] Git                          (v2.54.0)
+[✔ INSTALADO] VS Code CLI                  (v1.138.0)
+────────────────────────────────────────────────────────────
+✔ ¡Todo listo! Tu sistema tiene todas las dependencias necesarias.
 ```
 
 ---
 
-## 💻 Uso de la CLI
+## 📁 3. Nomenclatura Estricta y Estructura Limpia por Curso
 
-### 1. Inicializar un nuevo curso o proyecto limpio
+Cualquier curso o proyecto gestionado con `m-docflow` utiliza esta organización intuitiva:
+
+```text
+Nombre-Del-Curso/
+├── Clases/                # 📂 INTACTA (Diapositivas y material del docente)
+├── documentos del curso/  # 📂 INTACTA (Sílabos, rúbricas y formatos oficiales)
+├── materiales/            # 📂 INTACTA (Papers descargados e insumos)
+│
+├── codigo/                # 💻 TU SOFTWARE (APIs, Docker, Python, etc. 100% aislado)
+│
+├── documentacion/         # 📝 REDACCIÓN ACADÉMICA PURA (Sin scripts ni out/)
+│   ├── cuerpo/            # Capítulos modulares (00_intro.tex, 01_problema.tex, ...)
+│   ├── anexos/            # 01_anexo.tex (Instrumentos, encuestas, etc.)
+│   ├── figuras/           # Gráficos e imágenes propias del informe
+│   └── referencias.bib    # Base de datos bibliográfica BibLaTeX
+│
+├── presentacion/          # 📊 EXPOSICIONES INSTITUCIONALES
+│   ├── presentacion.md    # Diapositivas en Markdown limpio
+│   └── assets/            # Diagramas SVG de arquitectura y organigramas
+│
+├── PDF-documentacion/     # 📦 ENTREGABLES DE INFORMES (Control de versiones)
+│   ├── LRPD-CN-2026-09-19-104825.pdf
+│   ├── LRPD-CN-2026-09-19-104844-Avance2.pdf
+│   ├── LRPD-CN-ACTUAL.pdf  # Siempre la versión más reciente lista para subir
+│   └── HISTORIAL.md       # Bitácora automática en Markdown
+│
+├── PDF-presentacion/      # 📦 ENTREGABLES DE DIAPOSITIVAS (Control de versiones)
+│   ├── PRESENTACION-CN-2026-09-19-104837.pdf
+│   ├── PRESENTACION-CN-ACTUAL.pdf
+│   └── HISTORIAL.md       # Bitácora de presentaciones
+│
+├── m-project.json         # Configuración mínima del proyecto (metadatos, equipo)
+└── .gitignore             # Ignora código temporal
+```
+
+---
+
+## 🚀 4. Tutorial Paso a Paso: De 0 a tu Primer Informe en 5 Minutos
+
+### Paso 1: Inicializar un nuevo curso
+Abre tu terminal en la carpeta de tu curso y ejecuta:
 ```bash
-# Crea la estructura aislada en la carpeta actual o en una ruta específica
 m-docflow init . --preset upsjb --title "Computación en la Nube" --docente "Mg. Carolyn Rojas Vargas"
 ```
 
-### 2. Compilar Documento Académico (LaTeX APA 7)
-Compila en caché temporal y exporta el PDF directamente a `dist/` sin generar archivos `.aux` ni `.log` en tu carpeta:
-```bash
-m-docflow build
-
-# Compilar y abrir automáticamente
-m-docflow build --open
+### Paso 2: Configurar los metadatos (`m-project.json`)
+Edita el archivo `m-project.json` en la raíz del curso:
+```json
+{
+  "project": "computacion-en-la-nube-lrpd",
+  "preset": "upsjb",
+  "type": "lrpd",
+  "siglas": "CN",
+  "metadata": {
+    "titulotrabajo": "Propuesta de Arquitectura Cloud con Microservicios en AWS Fargate",
+    "titulocorto": "Solución Cloud con Microservicios",
+    "curso": "COMPUTACIÓN EN LA NUBE",
+    "docente": "Mg. Carolyn Milagros Rojas Vargas",
+    "estudiantes": [
+      "Bautista Pachas, Grethel Xiomara",
+      "Escate Aguilar, Eddison Leonardo",
+      "Torres Espinoza, Marlon Omar"
+    ],
+    "anio": "2026",
+    "ciclo": "VIII"
+  }
+}
 ```
 
-### 3. Compilar Presentación Institucional (Marp)
-Aplica automáticamente la tipografía, colores y fondos institucionales del preset configurado:
-```bash
-# Exportar a PDF
-m-docflow slides
+### Paso 3: Redactar los capítulos
+Los capítulos de tu informe se editan en `documentacion/cuerpo/`:
+* `00_introduccion.tex`
+* `01_planteamiento.tex`
+* `02_marco_teorico.tex`
+* `03_metodologia.tex`
+* `04_resultados.tex`
+* `05_conclusiones.tex`
 
-# Exportar a PowerPoint (.pptx) y abrirlo
-m-docflow slides --pptx --open
-```
-
-### 4. Inyectar Citas Científicas por DOI (Crossref)
-Consulta en tiempo real la API de Crossref y formatea automáticamente la entrada BibTeX en `docs/references.bib`:
+### Paso 4: Inyectar citas científicas desde Crossref
+Para agregar un paper con su DOI oficial, no necesitas buscar el BibTeX a mano:
 ```bash
 m-docflow cite "10.1016/j.cose.2023.103200"
 ```
+La herramienta consulta la API de Crossref, formatea la cita BibLaTeX y la inyecta directamente en `documentacion/referencias.bib`, indicándote la clave a usar (`\cite{Freitas_2023}`).
 
-### 5. Control de Palabras y Validación de Abstract
-Calcula el número de palabras por capítulo y verifica el semáforo del límite de 250 palabras del resumen:
+### Paso 5: Escribir diapositivas en Markdown
+Abre `presentacion/presentacion.md` y escribe tus láminas separándolas con `---`:
+```markdown
+---
+marp: true
+theme: upsjb
+paginate: true
+---
+
+<!-- _class: portada -->
+
+# Solución Cloud en AWS Fargate
+### Computación en la Nube — 2026-II
+
+**Equipo:** Marlon Torres, Grethel Bautista, Eddison Escate  
+**Docente:** Mg. Carolyn Rojas Vargas  
+
+---
+
+# 1. Planteamiento del Problema
+- Alta latencia en servidores on-premise.
+- Necesidad de alta disponibilidad y autoescalado elástico.
+```
+
+### Paso 6: Compilar y Registrar Avances
+```bash
+# Compilar informe académico (LaTeX APA 7)
+m-docflow build --tag "Avance-Semana-03"
+
+# Compilar y abrir automáticamente
+m-docflow build --open
+
+# Compilar presentación en PDF o PowerPoint (.pptx)
+m-docflow slides
+m-docflow slides --pptx --open
+```
+
+### Paso 7: Conteo y Auditoría de Palabras
 ```bash
 m-docflow count
 ```
+Muestra un semáforo visual con el total de palabras por capítulo y valida si el resumen cumple la regla académica de las 250 palabras.
 
 ---
 
-## 📁 Estructura Limpia de un Proyecto
+## 🏷️ 5. Regla de Estampado y Control de Versiones
 
-Cualquier curso o proyecto gestionado con `m-docflow` mantiene esta organización:
+Cada compilación genera un archivo sellado que **nunca sobrescribe el anterior**:
 
-```text
-mi-proyecto-o-curso/
-├── m-project.json         # Configuración mínima del proyecto (preset, metadatos)
-│
-├── docs/                  # REDACCIÓN ACADÉMICA PURA
-│   ├── cuerpo/            # Capítulos modulares (00_intro.tex, 01_problema.tex, etc.)
-│   ├── anexos/            # Anexos o instrumentos de recolección
-│   ├── figures/           # Diagramas y capturas exclusivas del informe
-│   └── references.bib     # Referencias bibliográficas
-│
-├── slides/                # PRESENTACIONES INSTITUCIONALES
-│   ├── presentacion.md    # Markdown puro de diapositivas
-│   └── assets/            # Gráficos propios de la exposición
-│
-├── src/                   # CÓDIGO FUENTE DE SOFTWARE (100% AISLADO)
-│   ├── backend/           # Microservicios, APIs, modelos de IA, etc.
-│   ├── docker-compose.yml
-│   └── .gitignore
-│
-├── materiales/            # FUENTES DE CONSULTA (Read-only)
-│   ├── articulos/         # Papers científicos en PDF
-│   └── normativas_guias/  # Rúbricas y sílabos del docente
-│
-└── dist/                  # ENTREGABLES FINALES COMPILADOS (.pdf, .pptx)
+* **Patrón:** `TIPO-SIGLAS-AAAA-MM-DD-HHMMSS[-TAG].ext`
+* **Ejemplos reales:**
+  * `LRPD-CN-2026-09-19-104825.pdf`
+  * `LRPD-CN-2026-09-19-104844-Avance2.pdf`
+  * `PRESENTACION-CN-2026-09-19-104837.pdf`
+* **Acceso Rápido:** Siempre se genera una copia `...-ACTUAL.pdf` con la última versión para subir directamente al Blackboard o portal universitario.
+* **Bitácora Automática:** Se actualiza un archivo `HISTORIAL.md` dentro de cada carpeta de exportación con fecha, hora, tamaño y notas del avance.
+
+---
+
+## 🤖 6. Guía de Asistencia con Agentes de IA
+
+`m-docflow` está diseñado para operar con **Antigravity, Claude Code, Codex y Cursor**.
+
+### Prompt Maestro para Invocar al Agente:
+Copia y pega este mensaje al iniciar sesión con cualquier IA:
+
+```markdown
+Actúa como un Asistente Senior de Investigación Académica y Desarrollo de Software.
+
+Vas a trabajar en la siguiente carpeta de curso/proyecto:
+📁 RUTA DEL CURSO: "[Pega aquí la ruta completa de tu curso]"
+🎯 TAREA SOLICITADA: "[Indica qué redactar, programar o presentar]"
+🏷️ FORMATO / PRESET: "upsjb"
+
+PROTOCOLO OBLIGATORIO DE EJECUCIÓN (m-docflow):
+1. RECONOCIMIENTO AUTOMÁTICO:
+   - Inspecciona los archivos en "documentos del curso/", "Clases/" o borradores para extraer: Asignatura, docente asesor, integrantes del equipo, título del proyecto y ciclo.
+2. ESTRUCTURA Y FRAMEWORK:
+   - El sistema cuenta con el motor global "m-docflow" instalado en D:\proyectos\m-docflow.
+   - NUNCA crees scripts .ps1, carpetas .vscode ni plantillas sueltas en la carpeta del curso.
+   - Todo debe estructurarse en:
+     • documentacion/ (cuerpo/, figuras/, anexos/, referencias.bib)
+     • presentacion/ (presentacion.md, assets/)
+     • codigo/ (software puro, aislado)
+     • PDF-documentacion/ y PDF-presentacion/ (entregables)
+3. DESARROLLO Y COMPILACIÓN:
+   - Para compilar el informe: m-docflow build "<RUTA>" --tag "<ETIQUETA>"
+   - Para compilar diapositivas: m-docflow slides "<RUTA>" --tag "<ETIQUETA>"
+   - Confirma la entrega sellada con formato TIPO-SIGLAS-AAAA-MM-DD-HHMMSS.
 ```
 
 ---
 
-## 🤖 Integración y Reglas para Agentes de IA
+## 🏛️ 7. Sistema de Presets Multi-Institucional
 
-`m-docflow` está diseñado nativamente para flujos de trabajo asistidos por IA (**Antigravity**, **Claude Code**, **Codex**, **Cursor**):
-- Incluye directivas en `AGENTS.md` para evitar que los modelos de lenguaje intenten crear compiladores repetidos o mezclen código en carpetas de redacción.
-- Cuando una IA trabaja en código, solo interactúa con `src/`.
-- Cuando una IA redacta o investiga, solo interactúa con `docs/` y `materiales/`.
+`m-docflow` no está atado a una sola universidad. Puedes cambiar de formato en `m-project.json`:
+
+| Preset | Institución / Estándar | Características |
+| :--- | :--- | :--- |
+| **`upsjb`** | **Universidad Privada San Juan Bautista** | APA 7ma Edición, carátula con escudo oficial, preliminares romanos, tablas apaisadas `landscape` y tema Marp institucional. |
+| **`generic-apa7`** | **Estándar Académico Global** | APA 7 neutro estudiantil/profesional + Diapositivas minimalistas ejecutivas. |
+
+### Cómo Crear un Preset para otra Universidad:
+1. Crea una carpeta en `presets/<mi-universidad>/`.
+2. Agrega `preset.json` declarando las rutas de `setup.tex`, `cover.tex` y el CSS de Marp.
+3. ¡Listo! Cualquier proyecto puede usarlo con `"preset": "mi-universidad"`.
 
 ---
 
-## 🛠️ Cómo Crear un Nuevo Preset Institucional
+## ❓ 8. Preguntas Frecuentes (FAQ) y Troubleshooting
 
-Para agregar una nueva universidad o formato:
-1. Crea una carpeta en `presets/<mi-universidad>/`.
-2. Añade un archivo `preset.json`:
-   ```json
-   {
-     "id": "mi-universidad",
-     "name": "Nombre Oficial de la Institución",
-     "latex": {
-       "setup": "latex/setup.tex",
-       "cover": "latex/cover.tex"
-     },
-     "marp": {
-       "theme": "marp/theme.css",
-       "themeName": "mi-tema"
-     }
-   }
-   ```
-3. ¡Listo! Ya puede ser invocado con `m-docflow init . --preset mi-universidad`.
+<details>
+<summary><b>¿Por qué no veo archivos .aux, .log o .bbl en la carpeta del curso?</b></summary>
+Porque m-docflow compila de forma aislada en <code>%TEMP%\m-docflow-build\...</code>. Esto evita que OneDrive bloquee archivos en sincronización y mantiene tu repositorio limpio.
+</details>
+
+<details>
+<summary><b>¿Qué hago si LaTeX dice que falta un paquete?</b></summary>
+Si usaste <code>setup.bat</code> (MiKTeX), MiKTeX descarga los paquetes faltantes en segundo plano de forma automática. Si usas TeX Live, abre la consola de TeX Live Manager (<code>tlmgr install &lt;paquete&gt;</code>).
+</details>
+
+<details>
+<summary><b>¿Cómo veo el PDF inmediatamente al compilar?</b></summary>
+Agrega el parámetro <code>--open</code>:
+<code>m-docflow build --open</code> o <code>m-docflow slides --open</code>.
+</details>
+
+<details>
+<summary><b>¿Dónde coloco mi código de programación (Python, Node, Docker)?</b></summary>
+En la carpeta <code>codigo/</code>. Está 100% aislada de LaTeX y Marp, con su propio <code>.gitignore</code> para que los entornos virtuales (<code>.venv</code>, <code>node_modules</code>) no interfieran con tus informes.
+</details>
 
 ---
 
@@ -188,10 +308,10 @@ Para agregar una nueva universidad o formato:
 **Marlon Omar Torres Espinoza**  
 *Estudiante de Ingeniería de Sistemas — Universidad Privada San Juan Bautista*  
 * GitHub: [@marlon-mte](https://github.com/marlon-mte)  
-* Proyectos: `m-core`, `m-cortex`, `m-agenda`, `m-docflow`
+* Proyectos relacionados: `m-core`, `m-cortex`, `m-agenda`, `m-docflow`
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+Distribuido bajo la Licencia **MIT**. Consulta [LICENSE](LICENSE) para más detalles.
