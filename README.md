@@ -31,7 +31,7 @@ Tener que copiar en cada curso decenas de scripts de compilación (`build.ps1`),
 
 ### La Solución: m-docflow
 **`m-docflow`** actúa como un **motor exterior desacoplado (Engine)**:
-* Vive en un repositorio central (`D:\proyectos\m-docflow`) y se ejecuta de forma global.
+* Se clona en cualquier carpeta o disco de tu máquina y se enlaza globalmente en tu terminal.
 * Tus cursos solo contienen **redacción pura (`documentacion/`)**, **código puro (`codigo/`)** y **diapositivas puras (`presentacion/`)**.
 * La compilación ocurre en una memoria caché temporal aislada (`%TEMP%`), dejando **cero archivos basura en el curso**.
 * Exporta entregables versionados automáticamente bajo el estándar estricto: **`TIPO-SIGLAS-AAAA-MM-DD-HHMMSS.pdf`**.
@@ -247,7 +247,7 @@ PROTOCOLO OBLIGATORIO DE EJECUCIÓN (m-docflow):
 1. RECONOCIMIENTO AUTOMÁTICO:
    - Inspecciona los archivos en "documentos del curso/", "Clases/" o borradores para extraer: Asignatura, docente asesor, integrantes del equipo, título del proyecto y ciclo.
 2. ESTRUCTURA Y FRAMEWORK:
-   - El sistema cuenta con el motor global "m-docflow" instalado en D:\proyectos\m-docflow.
+   - El sistema cuenta con el motor CLI global "m-docflow" accesible desde cualquier terminal.
    - NUNCA crees scripts .ps1, carpetas .vscode ni plantillas sueltas en la carpeta del curso.
    - Todo debe estructurarse en:
      • documentacion/ (cuerpo/, figuras/, anexos/, referencias.bib)
