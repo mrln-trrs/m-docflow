@@ -6,6 +6,7 @@ import { compileLatex } from './compiler.js';
 import { compileSlides } from './marp.js';
 import { addCitationToProject } from './crossref.js';
 import { analyzeProjectWords } from './counter.js';
+import { runDoctor } from './doctor.js';
 
 function printBanner() {
   console.log(`
@@ -46,6 +47,8 @@ function printHelp() {
 
   \x1b[32mcount\x1b[0m [directorio]     Calcula el conteo de palabras del documento y valida
                         los límites del abstract (regla de 250 palabras).
+
+  \x1b[32mdoctor\x1b[0m                Verifica y diagnostica las herramientas del sistema (Node, LaTeX, Marp).
 
   \x1b[32mpresets\x1b[0m               Lista todos los perfiles institucionales disponibles.
 
@@ -90,6 +93,11 @@ export async function runCLI(argv = process.argv.slice(2)) {
 
   try {
     switch (command) {
+      case 'doctor': {
+        runDoctor();
+        break;
+      }
+
       case 'presets': {
         printBanner();
         console.log('\x1b[1mPerfiles Institucionales Disponibles:\x1b[0m\n');

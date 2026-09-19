@@ -48,20 +48,31 @@ Tener que copiar en cada curso o repositorio decenas de scripts de compilación 
 
 ---
 
-## 🚀 Instalación y Configuración Rápida
+## 🚀 Instalación Rápida
 
-### Requisitos Previos
-* **Node.js** (v18 o superior)
-* **Distribución LaTeX** (TeX Live o MiKTeX) con `latexmk` en PATH
-* **Marp CLI** (`npm install -g @marp-team/marp-cli`)
+### Opción A: Instalación Automática en 1 Clic (Windows)
+Ejecuta en PowerShell como Administrador dentro de la carpeta del proyecto:
+```powershell
+.\setup.ps1
+```
+> El script descarga e instala automáticamente **Node.js**, **MiKTeX** (~200MB, 3 min), **Marp CLI**, extensiones de **VS Code** y registra el comando global `m-docflow`. Consulta [INSTALACION.md](INSTALACION.md) para más detalles.
 
-### Instalación Local / Global
+### Opción B: Diagnóstico del Sistema
+Para verificar si tu computadora ya cuenta con todas las herramientas necesarias:
 ```bash
-# Clonar el repositorio
+m-docflow doctor
+```
+
+### Opción C: Instalación Manual
+```bash
+# 1. Clonar el repositorio
 git clone https://github.com/marlon-mte/m-docflow.git
 cd m-docflow
 
-# Enlazar comando global en tu sistema
+# 2. Instalar Marp CLI
+npm install -g @marp-team/marp-cli
+
+# 3. Enlazar comando global en tu sistema
 npm link
 ```
 
