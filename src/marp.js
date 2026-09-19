@@ -3,26 +3,21 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { loadConfig } from './config.js';
+import { resolveSlidesDirs, saveVersionedOutput } from './versioning.js';
 
 export function compileSlides(projectDir, options = {}) {
   const config = loadConfig(projectDir);
-  const slidesDir = path.join(projectDir, 'slides');
-  let inputFile = path.join(slidesDir, 'presentacion.md');
-
-  if (options.file) {
-    inputFile = path.resolve(projectDir, options.file);
-  }
+  const slideDirs = resolveSlidesDirs(projectDir);
+  const { slidesDir, outDir } = slideDirs;
+  let inputFile = options.file ? path.resolve(projectDir, options.file) : slideDirs.inputFile;
 
   if (!fs.existsSync(inputFile)) {
     throw new Error(`No se encontró el archivo de diapositivas en:\n${inputFile}`);
   }
 
-  const distDir = path.join(projectDir, 'dist');
-  fs.mkdirSync(distDir, { recursive: true });
-
   const format = options.pptx ? 'pptx' : 'pdf';
   const projectName = config.project || path.basename(projectDir);
-  const outputFile = path.join(distDir, `${projectName}_presentacion.${format}`);
+  const tmpOutputFile = path.join(os.tmpdir(), `${projectName}_tmp_slides.${format}`);
 
   // Determine preset theme
   const preset = config._preset;
@@ -30,7 +25,7 @@ export function compileSlides(projectDir, options = {}) {
     '--allow-local-files',
     '--no-stdin',
     `"${inputFile}"`,
-    '-o', `"${outputFile}"`
+    '-o', `"${tmpOutputFile}"`
   ];
 
   if (options.pptx) {
@@ -57,7 +52,7 @@ export function compileSlides(projectDir, options = {}) {
 
   console.log(`\x1b[36m[m-docflow]\x1b[0m Compilando diapositivas con Marp (${format.toUpperCase()})...`);
   console.log(`  \x1b[90mEntrada: ${path.relative(projectDir, inputFile)}\x1b[0m`);
-  console.log(`  \x1b[90mSalida : ${path.relative(projectDir, outputFile)}\x1b[0m`);
+  console.log(`  \x1b[90mDestino: ${path.relative(projectDir, outDir)}/\x1b[0m`);
 
   const result = spawnSync('marp', args, {
     shell: true,
@@ -69,13 +64,21 @@ export function compileSlides(projectDir, options = {}) {
     throw new Error(`Marp finalizó con código de error ${result.status}`);
   }
 
-  console.log(`\x1b[32m✔ Diapositivas generadas exitosamente en:\x1b[0m ${outputFile}`);
+  // Guardar entregable versionado en PDF-presentacion/
+  const delivery = saveVersionedOutput(outDir, `${projectName}_presentacion`, tmpOutputFile, format, {
+    tag: options.tag,
+    note: options.note
+  });
+
+  console.log(`\x1b[32m✔ Diapositivas generadas con éxito [${delivery.version}]:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
+  console.log(`  \x1b[90mAcceso rápido última versión: ${delivery.latestFileName}\x1b[0m`);
+  console.log(`  \x1b[90mHistorial registrado en     : ${path.join(outDir, 'HISTORIAL.md')}\x1b[0m`);
 
   if (options.open) {
-    openFile(outputFile);
+    openFile(delivery.versionedPath);
   }
 
-  return outputFile;
+  return delivery.versionedPath;
 }
 
 export function openFile(filePath) {

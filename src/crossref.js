@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveDocDirs } from './versioning.js';
 
 export async function fetchBibtexByDoi(rawDoi) {
   // Clean DOI string
@@ -41,9 +42,9 @@ export async function fetchBibtexByDoi(rawDoi) {
 }
 
 export async function addCitationToProject(projectDir, rawDoi) {
-  const bibPath = path.join(projectDir, 'docs', 'references.bib');
+  const { bibFile } = resolveDocDirs(projectDir);
+  const bibPath = bibFile;
   if (!fs.existsSync(bibPath)) {
-    // create if not exists
     fs.mkdirSync(path.dirname(bibPath), { recursive: true });
     fs.writeFileSync(bibPath, '% Bibliografía del proyecto (m-docflow)\n\n', 'utf8');
   }

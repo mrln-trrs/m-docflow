@@ -4,6 +4,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { loadConfig } from './config.js';
 import { openFile } from './marp.js';
+import { resolveDocDirs, saveVersionedOutput } from './versioning.js';
 
 function toTexPath(p) {
   return p.replace(/\\/g, '/');
@@ -30,14 +31,8 @@ export function compileLatex(projectDir, options = {}) {
   const buildDir = path.join(os.tmpdir(), 'm-docflow-build', projectName);
   fs.mkdirSync(buildDir, { recursive: true });
 
-  const docsDir = path.join(projectDir, 'docs');
-  const distDir = path.join(projectDir, 'dist');
-  fs.mkdirSync(distDir, { recursive: true });
-
-  const cuerpoDir = path.join(docsDir, 'cuerpo');
-  const figuresDir = path.join(docsDir, 'figures');
-  const anexosDir = path.join(docsDir, 'anexos');
-  const bibFile = path.join(docsDir, 'references.bib');
+  const docDirs = resolveDocDirs(projectDir);
+  const { docsDir, cuerpoDir, figuresDir, anexosDir, bibFile, outDir } = docDirs;
 
   // Copy references.bib to buildDir
   if (fs.existsSync(bibFile)) {
@@ -60,6 +55,10 @@ export function compileLatex(projectDir, options = {}) {
   }
   if (fs.existsSync(figuresDir)) {
     graphicsPaths.push(`{${toTexPath(figuresDir)}/}`);
+  }
+  const altFiguresDir = path.join(docsDir, 'figures');
+  if (fs.existsSync(altFiguresDir) && altFiguresDir !== figuresDir) {
+    graphicsPaths.push(`{${toTexPath(altFiguresDir)}/}`);
   }
   // Also project docs dir
   graphicsPaths.push(`{${toTexPath(docsDir)}/}`);
@@ -221,7 +220,6 @@ export function compileLatex(projectDir, options = {}) {
   });
 
   const generatedPdf = path.join(buildDir, 'main.pdf');
-  const targetPdf = path.join(distDir, `${projectName}.pdf`);
 
   if (!fs.existsSync(generatedPdf) || result.status !== 0) {
     console.error('\x1b[31m✖ Error durante la compilación de LaTeX:\x1b[0m');
@@ -240,16 +238,19 @@ export function compileLatex(projectDir, options = {}) {
     throw new Error(`Fallo de compilación con código ${result.status}. Revisa los errores arriba.`);
   }
 
-  // Copy resulting PDF to dist
-  fs.copyFileSync(generatedPdf, targetPdf);
-  const stats = fs.statSync(targetPdf);
-  const sizeMb = (stats.size / (1024 * 1024)).toFixed(2);
+  // Guardar entregable versionado en PDF-documentacion/
+  const delivery = saveVersionedOutput(outDir, projectName, generatedPdf, 'pdf', {
+    tag: options.tag,
+    note: options.note
+  });
 
-  console.log(`\x1b[32m✔ Documento compilado con éxito:\x1b[0m ${targetPdf} (${sizeMb} MB)`);
+  console.log(`\x1b[32m✔ Documento compilado con éxito [${delivery.version}]:\x1b[0m ${delivery.versionedPath} (${delivery.sizeStr})`);
+  console.log(`  \x1b[90mAcceso rápido última versión: ${delivery.latestFileName}\x1b[0m`);
+  console.log(`  \x1b[90mHistorial registrado en     : ${path.join(outDir, 'HISTORIAL.md')}\x1b[0m`);
 
   if (options.open) {
-    openFile(targetPdf);
+    openFile(delivery.versionedPath);
   }
 
-  return targetPdf;
+  return delivery.versionedPath;
 }

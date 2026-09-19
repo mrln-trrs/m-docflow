@@ -16,21 +16,22 @@ export function initProject(targetDir, options = {}) {
 
   // Ensure target directories exist
   const dirsToCreate = [
-    'docs/cuerpo',
-    'docs/figures',
-    'docs/anexos',
-    'slides/assets',
-    'src',
+    'documentacion/cuerpo',
+    'documentacion/figuras',
+    'documentacion/anexos',
+    'presentacion/assets',
+    'codigo',
     'materiales/articulos',
     'materiales/normativas_guias',
     'materiales/datos_insumos',
-    'dist'
+    'PDF-documentacion',
+    'PDF-presentacion'
   ];
 
   for (const d of dirsToCreate) {
     fs.mkdirSync(path.join(absTarget, d), { recursive: true });
     const gitkeep = path.join(absTarget, d, '.gitkeep');
-    if (!fs.existsSync(gitkeep) && d.includes('assets') || d.includes('figures') || d.includes('materiales') || d === 'src' || d === 'dist') {
+    if (!fs.existsSync(gitkeep) && (d.includes('assets') || d.includes('figuras') || d.includes('materiales') || d === 'codigo' || d.startsWith('PDF-'))) {
       fs.writeFileSync(gitkeep, '', 'utf8');
     }
   }
@@ -56,8 +57,8 @@ export function initProject(targetDir, options = {}) {
 
   saveConfig(absTarget, config);
 
-  // Starter LaTeX body chapters if docs/cuerpo is empty
-  const cuerpoDir = path.join(absTarget, 'docs', 'cuerpo');
+  // Starter LaTeX body chapters if documentacion/cuerpo is empty
+  const cuerpoDir = path.join(absTarget, 'documentacion', 'cuerpo');
   const existingTex = fs.readdirSync(cuerpoDir).filter(f => f.endsWith('.tex'));
   if (existingTex.length === 0) {
     fs.writeFileSync(
@@ -82,8 +83,8 @@ export function initProject(targetDir, options = {}) {
     );
   }
 
-  // Starter references.bib if missing
-  const bibFile = path.join(absTarget, 'docs', 'references.bib');
+  // Starter referencias.bib if missing
+  const bibFile = path.join(absTarget, 'documentacion', 'referencias.bib');
   if (!fs.existsSync(bibFile)) {
     fs.writeFileSync(
       bibFile,
@@ -93,7 +94,7 @@ export function initProject(targetDir, options = {}) {
   }
 
   // Starter anexos
-  const anexoFile = path.join(absTarget, 'docs', 'anexos', '01_anexo.tex');
+  const anexoFile = path.join(absTarget, 'documentacion', 'anexos', '01_anexo.tex');
   if (!fs.existsSync(anexoFile)) {
     fs.writeFileSync(
       anexoFile,
@@ -102,8 +103,8 @@ export function initProject(targetDir, options = {}) {
     );
   }
 
-  // Starter slides/presentacion.md
-  const slidesFile = path.join(absTarget, 'slides', 'presentacion.md');
+  // Starter presentacion/presentacion.md
+  const slidesFile = path.join(absTarget, 'presentacion', 'presentacion.md');
   if (!fs.existsSync(slidesFile)) {
     const themeName = preset.marp?.themeName || 'default';
     fs.writeFileSync(

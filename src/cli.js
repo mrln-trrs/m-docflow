@@ -121,7 +121,11 @@ export async function runCLI(argv = process.argv.slice(2)) {
         if (!projectRoot) {
           throw new Error(`No se encontró ningún proyecto m-docflow en "${path.resolve(targetArg)}".\nEjecuta "m-docflow init" primero.`);
         }
-        compileLatex(projectRoot, { open: args.open });
+        compileLatex(projectRoot, {
+          open: args.open,
+          tag: args.tag,
+          note: args.note
+        });
         break;
       }
 
@@ -133,7 +137,9 @@ export async function runCLI(argv = process.argv.slice(2)) {
         }
         compileSlides(projectRoot, {
           pptx: args.pptx,
-          open: args.open
+          open: args.open,
+          tag: args.tag,
+          note: args.note
         });
         break;
       }

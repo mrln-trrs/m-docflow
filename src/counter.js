@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveDocDirs } from './versioning.js';
 
 function stripLatexCommentsAndCommands(tex) {
   return tex
@@ -22,7 +23,7 @@ export function countWordsInText(text) {
 }
 
 export function analyzeProjectWords(projectDir) {
-  const cuerpoDir = path.join(projectDir, 'docs', 'cuerpo');
+  const { docsDir, cuerpoDir } = resolveDocDirs(projectDir);
   const results = {
     chapters: [],
     totalWords: 0,
@@ -43,8 +44,8 @@ export function analyzeProjectWords(projectDir) {
 
   // Check abstract if exists in preliminaries or docs
   const candidateAbstracts = [
-    path.join(projectDir, 'docs', 'preliminares', '04_resumen.tex'),
-    path.join(projectDir, 'docs', '04_resumen.tex')
+    path.join(docsDir, 'preliminares', '04_resumen.tex'),
+    path.join(docsDir, '04_resumen.tex')
   ];
 
   for (const absPath of candidateAbstracts) {
