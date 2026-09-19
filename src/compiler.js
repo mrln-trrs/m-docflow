@@ -65,7 +65,7 @@ export function compileLatex(projectDir, options = {}) {
   graphicsPaths.push(`{${toTexPath(docsDir)}/}`);
 
   // Build main.tex content
-  let tex = '';
+  let tex = '\\PassOptionsToPackage{plainpages=false,pdfpagelabels=true}{hyperref}\n';
   tex += (preset.latex?.documentclass || '\\documentclass[stu,12pt,letterpaper,floatsintext]{apa7}') + '\n\n';
 
   // Graphics path
@@ -94,10 +94,29 @@ export function compileLatex(projectDir, options = {}) {
     tex += `\\renewcommand{\\${k}}{${val}}\n`;
   }
 
-  // Format student items
-  const autorVal = metadata.autor || metadata.author || 'Marlon Omar Torres Espinoza';
-  tex += `\\providecommand{\\estudiantes}{\\item ${autorVal}}\n`;
-  tex += `\\renewcommand{\\estudiantes}{\\item ${autorVal}}\n\n`;
+  // Format student items (supporting single author or team array)
+  let estudiantesTex = '';
+  let autorVal = metadata.autor || metadata.author || '';
+
+  if (Array.isArray(metadata.estudiantes) && metadata.estudiantes.length > 0) {
+    estudiantesTex = metadata.estudiantes.map(e => `\\item ${e.replace(/\.?$/, '.')}`).join('\n  ');
+    if (!autorVal) {
+      if (metadata.estudiantes.length === 1) {
+        autorVal = metadata.estudiantes[0];
+      } else {
+        const allButLast = metadata.estudiantes.slice(0, -1).join(', ');
+        autorVal = `${allButLast} y ${metadata.estudiantes[metadata.estudiantes.length - 1]}`;
+      }
+    }
+  } else if (typeof metadata.estudiantes === 'string' && metadata.estudiantes.trim()) {
+    estudiantesTex = metadata.estudiantes.trim();
+  } else {
+    autorVal = autorVal || 'Torres Espinoza, Marlon Omar';
+    estudiantesTex = `\\item ${autorVal}.`;
+  }
+
+  tex += `\\providecommand{\\estudiantes}{\n  ${estudiantesTex}\n}\n`;
+  tex += `\\renewcommand{\\estudiantes}{\n  ${estudiantesTex}\n}\n\n`;
 
   // APA 7 title definitions
   tex += `\\title{${metadata.titulotrabajo || 'Sin Título'}}\n`;
@@ -150,7 +169,9 @@ export function compileLatex(projectDir, options = {}) {
 
   // Body chapters (cuerpo)
   tex += `% Cuerpo del documento (Capítulos)\n`;
-  tex += `\\newpage\n\\pagenumbering{arabic}\n\\setcounter{page}{1}\n\n`;
+  tex += `\\clearpage\n\\edef\\temppagenum{\\the\\value{page}}\n\\pagenumbering{arabic}\n\\setcounter{page}{\\temppagenum}\n\n`;
+  tex += `% Estilo continuo de encabezado para el cuerpo del trabajo\n`;
+  tex += `\\fancypagestyle{estilocuerpo}{\n  \\fancyhf{}\n  \\fancyhead[L]{\\small \\textit{\\titulocorto}}\n  \\fancyhead[R]{\\normalsize \\thepage}\n  \\renewcommand{\\headrulewidth}{0.4pt}\n  \\renewcommand{\\footrulewidth}{0pt}\n}\n\\pagestyle{estilocuerpo}\n\\doublespacing\n\n`;
 
   if (fs.existsSync(cuerpoDir)) {
     const chapters = fs.readdirSync(cuerpoDir)

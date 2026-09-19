@@ -1,9 +1,20 @@
 % =========================================================================
-% Configuración Base del Framework APA 7 - UPSJB
+% Configuración Base del Framework APA 7 - UPSJB (m-docflow)
 % =========================================================================
 
 % Ajuste de encabezados
 \setlength{\headheight}{16pt}
+
+% Tipografía Oficial APA 7ma Edición: Times New Roman 12pt
+\usepackage{newtxtext,newtxmath}
+
+% Interlineado doble según estándar APA 7
+\usepackage{setspace}
+
+% Sangría de primera línea en todos los párrafos (0.5 in / 1.27 cm)
+\usepackage{indentfirst}
+\setlength{\parindent}{0.5in}
+\setlength{\parskip}{0pt}
 
 % Idioma español con soporte "Tabla" en lugar de "Cuadro"
 \usepackage[spanish,es-tabla]{babel}
@@ -13,18 +24,28 @@
 \usepackage[style=apa,backend=biber]{biblatex}
 \addbibresource{references.bib}
 
+% Soporte para páginas en orientación horizontal (Landscape)
+\usepackage{pdflscape}
+
+% Control de ubicación estricta de tablas y figuras
+\usepackage{float}
+
 % Tablas profesionales estilo APA
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{makecell}
+\usepackage{enumitem}
 
 % Gráficos y diagramas vectoriales nativos TikZ
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows, fit, backgrounds}
 
 % Soporte para incrustar páginas externas de PDFs (si se requiere)
 \usepackage{pdfpages}
+
+% Control avanzado de encabezados y pies de página
+\usepackage{fancyhdr}
 
 % Hipervínculos discretos según formato académico
 \usepackage{hyperref}
@@ -32,5 +53,7 @@
     colorlinks=true,
     linkcolor=black,
     citecolor=black,
-    urlcolor=blue!60!black
+    urlcolor=blue!60!black,
+    plainpages=false,
+    pdfpagelabels=true
 }

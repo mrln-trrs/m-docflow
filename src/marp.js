@@ -29,8 +29,8 @@ export function compileSlides(projectDir, options = {}) {
   const args = [
     '--allow-local-files',
     '--no-stdin',
-    inputFile,
-    '-o', outputFile
+    `"${inputFile}"`,
+    '-o', `"${outputFile}"`
   ];
 
   if (options.pptx) {
@@ -51,7 +51,7 @@ export function compileSlides(projectDir, options = {}) {
       });
       const tmpCss = path.join(os.tmpdir(), `m-docflow-theme-${preset.id}.css`);
       fs.writeFileSync(tmpCss, resolvedCss, 'utf8');
-      args.push('--theme-set', tmpCss);
+      args.push('--theme-set', `"${tmpCss}"`);
     }
   }
 
