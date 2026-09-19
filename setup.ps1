@@ -21,7 +21,7 @@ $ErrorActionPreference = "Continue"
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "   ⚡ INSTALADOR AUTOMATIZADO DE ENTORNO -- m-docflow       " -ForegroundColor Cyan
 Write-Host "   Autor: Marlon Omar Torres Espinoza (@marlon-mte)        " -ForegroundColor DarkGray
-Write-Host "   Repositorio: D:\proyectos\m-docflow                     " -ForegroundColor DarkGray
+Write-Host "   Ubicación: $PSScriptRoot" -ForegroundColor DarkGray
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 

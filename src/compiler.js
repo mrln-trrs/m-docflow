@@ -208,8 +208,8 @@ export function compileLatex(projectDir, options = {}) {
     '-pdf',
     '-synctex=1',
     '-interaction=nonstopmode',
-    `-outdir=${buildDir}`,
-    mainTexPath
+    `-outdir="${buildDir}"`,
+    `"${mainTexPath}"`
   ];
 
   const result = spawnSync('latexmk', latexmkArgs, {

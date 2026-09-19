@@ -6,11 +6,13 @@ Esta guía explica cómo configurar el entorno de trabajo completo para utilizar
 
 ## ⚡ Método 1: Instalación Automatizada en 1 Paso (Windows)
 
-Si estás en Windows 10 u 11, puedes instalar todo automáticamente ejecutando nuestro script en **PowerShell como Administrador**:
+### Opción A (Doble clic):
+Simplemente navega hasta la carpeta donde clonaste o descargaste `m-docflow` y haz **doble clic en `setup.bat`**.
 
-1. Abre PowerShell y navega a la carpeta de `m-docflow`:
+### Opción B (Desde PowerShell):
+1. Abre PowerShell y navega a la carpeta del repositorio:
    ```powershell
-   cd D:\proyectos\m-docflow
+   cd <carpeta-donde-clonaste-m-docflow>
    ```
 2. Ejecuta el script instalador:
    ```powershell
