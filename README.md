@@ -271,11 +271,39 @@ PROTOCOLO OBLIGATORIO DE EJECUCIÓN (m-docflow):
 | **`upsjb`** | **Universidad Privada San Juan Bautista** | APA 7ma Edición, carátula con escudo oficial, preliminares romanos, tablas apaisadas `landscape` y tema Marp institucional. |
 | **`unica`** | **Universidad Nacional San Luis Gonzaga (Ica)** | Arial 10pt, interlineado 1.5, membrete institucional oficial en cabecera, carátula oficial y tema Marp institucional UNICA. |
 | **`generic-apa7`** | **Estándar Académico Global** | APA 7 neutro estudiantil/profesional + Diapositivas minimalistas ejecutivas. |
+| **`upsjb-practica`** | **UPSJB — Informes de práctica** | Portada breve con tema, curso y estudiante; índices condicionales; cuerpo de resolución aplicada; referencias y anexos, sin preliminares de LRPD. |
 
 ### Cómo Crear un Preset para otra Universidad:
 1. Crea una carpeta en `presets/<mi-universidad>/`.
 2. Agrega `preset.json` declarando las rutas de `setup.tex`, `cover.tex` y el CSS de Marp.
 3. ¡Listo! Cualquier proyecto puede usarlo con `"preset": "mi-universidad"`.
+
+### Estructura recomendada para una práctica aplicada
+
+Para crear un informe semanal de resolución aplicada, inicializa el proyecto con `upsjb-practica`:
+
+```bash
+m-docflow init "Practica-Semana-04" --preset upsjb-practica --title "Resolución de la práctica aplicada al caso de estudio"
+```
+
+La carpeta debe conservar esta organización:
+
+```text
+Practica-Semana-04/
+├── m-project.json
+├── documentacion/
+│   ├── cuerpo/          # Problema, análisis, propuesta y resolución aplicada
+│   ├── anexos/          # Evidencias, matrices y tablas complementarias
+│   ├── figuras/         # Diagramas del caso
+│   └── referencias.bib  # Fuentes citadas en formato APA 7
+├── codigo/              # Scripts o consultas de apoyo
+├── materiales/          # Insumos del caso y fuentes de contexto
+└── PDF-documentacion/   # Entregable versionado
+```
+
+El contenido debe redactarse como la resolución del problema del caso. Cada indicación de la guía se convierte en una decisión concreta del proyecto: diagnóstico, diseño, procedimiento, validación, resultado esperado y evidencia. El informe debe usar voz impersonal proyectiva, por ejemplo: “se analizará”, “se definirá”, “se cargará”, “se validará” y “se documentará”.
+
+La salida recomendada es: portada institucional, índices cuando correspondan, introducción, desarrollo de la resolución, referencias y anexos. El preset desactiva por defecto la hoja de responsables, el agradecimiento, la dedicatoria, el resumen y el abstract.
 
 ---
 

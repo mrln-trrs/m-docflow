@@ -64,7 +64,11 @@ export function compileLatex(projectDir, options = {}) {
   // Determine paths from preset
   const presetBase = preset._baseDir;
   const setupFile = preset.latex?.setup ? path.join(presetBase, preset.latex.setup) : null;
-  const coverFile = preset.latex?.cover ? path.join(presetBase, preset.latex.cover) : null;
+  const configuredCover = config.cover ? path.resolve(projectDir, config.cover) : null;
+  const localCover = path.join(projectDir, 'cover.tex');
+  const coverFile = configuredCover && fs.existsSync(configuredCover)
+    ? configuredCover
+    : (fs.existsSync(localCover) ? localCover : (preset.latex?.cover ? path.join(presetBase, preset.latex.cover) : null));
   const presetAssetsDir = preset.latex?.assetsDir ? path.join(presetBase, preset.latex.assetsDir) : null;
   const presetPrelimDir = preset.latex?.preliminariesDir ? path.join(presetBase, preset.latex.preliminariesDir) : null;
 

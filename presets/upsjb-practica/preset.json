@@ -1,0 +1,41 @@
+{
+  "id": "upsjb-practica",
+  "name": "UPSJB - Informe de práctica",
+  "description": "Formato institucional UPSJB para prácticas semanales y resoluciones aplicadas.",
+  "version": "1.0.0",
+  "author": "Marlon Omar Torres Espinoza",
+  "latex": {
+    "engine": "latexmk",
+    "documentclass": "\\documentclass[stu,12pt,letterpaper,floatsintext]{apa7}",
+    "setup": "../upsjb/latex/setup.tex",
+    "cover": "latex/cover.tex",
+    "preliminariesDir": "latex/preliminaries",
+    "assetsDir": "../upsjb/latex/assets",
+    "defaults": {
+      "universidad": "UNIVERSIDAD PRIVADA SAN JUAN BAUTISTA",
+      "facultad": "FACULTAD DE INGENIERÍAS",
+      "escuela": "PROGRAMA ACADÉMICO DE INGENIERÍA DE COMPUTACIÓN Y SISTEMAS",
+      "ciudadpais": "ICA -- PERÚ",
+      "anio": "2026",
+      "ciclo": "VIII",
+      "tipotrabajo": "INFORME DE PRÁCTICA",
+      "autor": "Torres Espinoza, Marlon Omar",
+      "mostrarresponsables": false,
+      "mostrarportadilla": false,
+      "mostraragradecimiento": false,
+      "mostrardedicatoria": false,
+      "mostrarresumen": false,
+      "mostrarabstract": false,
+      "mostrarindices": true,
+      "mostrarindice": false,
+      "mostrarlistatablas": true,
+      "mostrarlistafiguras": true,
+      "mostraranexos": true
+    }
+  },
+  "marp": {
+    "theme": "../upsjb/marp/upsjb.css",
+    "themeName": "upsjb",
+    "assetsDir": "../upsjb/marp/assets"
+  }
+}
